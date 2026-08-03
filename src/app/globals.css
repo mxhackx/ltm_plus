@@ -136,4 +136,7 @@
     box-shadow: 0px 0px 0px 1px white;
     background-image: var(--card-linear);
   }
+  td, th {
+    border: 1px rgb(255, 83, 83) solid;
+  }
 }

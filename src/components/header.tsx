@@ -44,7 +44,7 @@ export default function Header() {
     { name: "Contact", href: "/contact" },
     { name: "À propos", href: "/about" },
   ];
-  
+
   useEffect(() => {
     const isDark = getDarkLocaltorage();
 
@@ -68,7 +68,7 @@ export default function Header() {
           <Link href="/contact" className="rounded-full p-2 transition hover:bg-black/10">
             <Phone size={22}></Phone>
           </Link>
-          <Link href="/panier" className="rounded-full p-2 transition hover:bg-black/10">
+          <Link href="/catalog" className="rounded-full p-2 transition hover:bg-black/10">
             <ShoppingCart size={22}/>
           </Link>
           <button onClick={() => setMenu(true)} className="rounded-full p-2 transition hover:bg-black/10">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from  "@/../public/logo.png";
 import worker from "@/../public/worker.jpeg";
+import ltm from "@/../public/ltm.jpeg";
 import { Moon, Phone, ShoppingCart, Sun } from "lucide-react";
 import "@/app/globals.css";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,7 @@ export default function Home() {
         <nav className="flex flex-row justify-between items-center mx-20 py-5">
           <div className="relative">
             <Link href="/" className="cursor-pointer relative">
-              <Image className="absolute" src={logo} alt="LTM+ logo" width={60}></Image>
+              <Image className="absolute" src={ltm} alt="LTM+ logo" width={60}></Image>
               <div className="bg-(--orange) p-7 rounded-full blur-xl"></div>
             </Link>
           </div>
@@ -48,8 +49,8 @@ export default function Home() {
           </div>
           <div className="flex gap-10">
             <button onClick={() => handleDarkClick(setDark)}>{dark ? <Sun size={22}/> : <Moon size={22}/>}</button>
-            <Phone></Phone>
-            <ShoppingCart></ShoppingCart>
+            <Link href="/contact"><Phone></Phone></Link>
+            <Link href="/catalog"><ShoppingCart></ShoppingCart></Link>
           </div>
           </div>
         </nav>

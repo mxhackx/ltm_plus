@@ -39,7 +39,7 @@ export default function Footer() {
           <div className="flex items-center justify-center gap-2">
             <MapPin size={18} />
             <div>
-              <p>Ilot F634 Parcelle "M"</p>
+              <p>lot F634 Parcelle {`"M"`}</p>
               <p>Tokan, Abomey-Calavi</p>
             </div>
           </div>
@@ -70,8 +70,6 @@ export default function Footer() {
             Qualité • Résistance • Performance
           </p>
         </div>
-
-        {/* Navigation */}
         <div>
           <h3 className="mb-4 font-semibold">Navigation</h3>
 
@@ -101,8 +99,6 @@ export default function Footer() {
             </Link>
           </nav>
         </div>
-
-        {/* Services */}
         <div>
           <h3 className="mb-4 font-semibold">Nos services</h3>
 
@@ -112,8 +108,6 @@ export default function Footer() {
             <li>Conseils techniques</li>
           </ul>
         </div>
-
-        {/* À propos */}
         <div>
           <h3 className="mb-4 font-semibold">LTM+</h3>
 
@@ -124,12 +118,9 @@ export default function Footer() {
         </div>
 
       </section>
-
-      {/* Copyright */}
       <div className="border-t border-white/10 bg-[#2b2b2b] py-5 text-center text-sm text-gray-400">
         © {new Date().getFullYear()} LTM+. Tous droits réservés.
       </div>
-
     </footer>
   );
 }
