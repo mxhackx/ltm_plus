@@ -1,5 +1,6 @@
 "use client";
 
+import { del } from "framer-motion/client";
 import { Minus, Plus, Trash2, ShoppingBag, CreditCard } from "lucide-react";
 
 const items = [
@@ -61,7 +62,7 @@ export default function Cart() {
       </div>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
         <section className="space-y-4">
-          {items.map((item) => (
+          {items.map((item, id) => (
             <article
               key={item.id}
               className="group rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 dark:border-white/10 dark:bg-white/[0.03]"
@@ -89,7 +90,9 @@ export default function Cart() {
                       aria-label={`Supprimer ${item.name}`}
                       className="shrink-0 rounded-lg p-2 text-neutral-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={18} onClick={() => {
+                        delete items[id];
+                      }}/>
                     </button>
                   </div>
 

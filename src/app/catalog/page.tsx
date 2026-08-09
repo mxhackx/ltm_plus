@@ -32,7 +32,7 @@ const CATALOG: Product[] = [
   { img: tube, name: "Tube IRL 3224", description: "Tube électrique rigide gris pour extérieur", category: "Tube IRL", dimension: "Ø40 x 2000 mm", barprice: 4200, price: 3600 },
 ];
 
-const HERO_SLIDES = CATALOG.slice(0, 3);
+const HERO_SLIDES = CATALOG.slice();
 
 
 

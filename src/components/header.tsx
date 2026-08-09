@@ -169,8 +169,8 @@ export default function Header() {
           </Link>
 
           <Link
-            href="/catalog"
-            aria-label="Catalogue"
+            href="/panier"
+            aria-label="Panier"
             className="rounded-full p-2 transition hover:bg-black/5 hover:text-(--orange) dark:hover:bg-white/10"
           >
             <ShoppingCart size={20} />
