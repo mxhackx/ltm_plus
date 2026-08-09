@@ -1,18 +1,71 @@
-import Image from "next/image";
+import Image, { type ImageProps } from "next/image";
 
-export default function MyCard({name, img, alt, price, barprice, devise = "F"} : {name:string, img: any, alt: string, price:number, barprice: number, devise: string}){
-    return (
-    <div className="flex flex-col-reverse relative items-center">
-        <div className="flex flex-col">
-            <div className="flex flex-col p-6 rounded-xl mylinear">
-                <p>{name}</p>
-                <div className="flex flex-row justify-between gap-5">
-                    <p>{price} {devise}</p>
-                    <p className="line-through">{barprice} {devise}</p>
-                </div>
-            </div>
+type MyCardProps = {
+  name: string;
+  img: ImageProps["src"];
+  alt?: string;
+  price: number;
+  barprice: number;
+  devise?: string;
+};
+
+export default function MyCard({
+  name,
+  img,
+  alt = "Produit",
+  price,
+  barprice,
+  devise = "F",
+}: MyCardProps) {
+  return (
+    <article className="group relative w-full max-w-[260px]">
+      <div className="relative z-10 mx-auto -mb-8 flex h-28 w-28 items-center justify-center overflow-hidden transition duration-300 group-hover:-translate-y-1">
+        <Image
+          src={img}
+          alt={alt}
+          fill
+          sizes="112px"
+          className="object-contain p-3 transition duration-500 group-hover:scale-105"
+        />
+      </div>
+
+      {/* Card */}
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-200 mylinear px-5 pb-5 pt-11 shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl dark:border-white/10 dark:bg-neutral-900">
+        {/* Orange glow */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-(--orange) opacity-10 blur-2xl transition duration-300 group-hover:opacity-20"
+        />
+
+        {/* Product name */}
+        <h3 className="relative truncate text-sm font-semibold text-neutral-900 dark:text-white">
+          {name}
+        </h3>
+
+        {/* Price */}
+        <div className="relative mt-3 flex items-end justify-between gap-3">
+          <div className="flex items-baseline gap-1">
+            <span className="text-lg font-bold text-(--orange)">
+              {price.toLocaleString("fr-FR")}
+            </span>
+
+            <span className="text-xs font-medium text-neutral-500">
+              {devise}
+            </span>
+          </div>
+
+          <span className="text-xs text-neutral-400 line-through">
+            {barprice.toLocaleString("fr-FR")} {devise}
+          </span>
         </div>
-        <Image src={img} alt={alt ?? "Image"} width={60} className="my-[-20px] z-0"></Image>
-    </div>
-    );
+
+        {/* Bottom accent */}
+        <div className="mt-4 h-px w-full bg-neutral-100 dark:bg-white/10" />
+
+        <p className="mt-3 text-[11px] text-neutral-400">
+          Prix indicatif
+        </p>
+      </div>
+    </article>
+  );
 }

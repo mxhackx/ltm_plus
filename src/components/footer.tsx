@@ -10,115 +10,153 @@ import {
   Home,
   Package,
   Contact,
+  ArrowUpRight,
 } from "lucide-react";
+
+const NAV_LINKS = [
+  { name: "Accueil", href: "/", icon: Home },
+  { name: "Catalogue", href: "/catalog", icon: Package },
+  { name: "Contact", href: "/contact", icon: Contact },
+];
+
+const SERVICES = ["Fabrication de tuyaux", "Distribution", "Conseils techniques"];
+
+/**
+ * Ligne de jonction — reprend le même motif que le hero (les tubes que
+ * fabrique LTM+), pour que le footer se lise comme la suite de la page,
+ * pas comme un bloc générique plaqué en bas.
+ */
+function ConduitLine({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative h-px w-full ${className}`} aria-hidden="true">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/20 to-transparent" />
+      <div className="absolute left-[8%] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border border-black/25 bg-[#150d08]" />
+      <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-black/25 bg-[#150d08]" />
+      <div className="absolute left-[92%] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border border-black/25 bg-[#150d08]" />
+    </div>
+  );
+}
 
 export default function Footer() {
   return (
-    <footer className="mt-20">
-
-      {/* Informations */}
-      <section className="grid gap-8 bg-[var(--orange)] px-6 py-10 text-center md:grid-cols-3">
-
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold">Contact</h3>
-
-          <div className="flex items-center justify-center gap-2">
-            <Phone size={18} />
-            <p>+229 01 97 28 09 76</p>
+    <footer className="">
+      {/* ----------------------------------------------------------- */}
+      {/* Info bar — contact / adresse / horaires                     */}
+      {/* ----------------------------------------------------------- */}
+      <section className="bg-(--orange) text-black">
+        <div className="mx-auto grid max-w-6xl gap-8 divide-y divide-black/15 px-6 py-10 md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="flex flex-col gap-3 pb-6 md:px-8 md:pb-0 items-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/60">
+              Contact
+            </p>
+            <a href="tel:+22901972809876" className="flex items-center gap-3 hover:underline">
+              <Phone size={18} strokeWidth={2} />
+              +229 01 97 28 09 76
+            </a>
+            <a href="mailto:email@gmail.com" className="flex items-center gap-3 hover:underline">
+              <Mail size={18} strokeWidth={2} />
+              email@gmail.com
+            </a>
           </div>
 
-          <div className="flex items-center justify-center gap-2">
-            <Mail size={18} />
-            <p>email@gmail.com</p>
+          <div className="flex flex-col gap-3 py-6 md:px-8 md:py-0 items-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/60">
+              Adresse
+            </p>
+            <div className="flex items-start gap-3">
+              <MapPin size={18} strokeWidth={2} className="mt-0.5 shrink-0" />
+              <p className="leading-6">
+                Lot F634 Parcelle {`"M"`}
+                <br />
+                Tokan, Abomey-Calavi
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-3 border-y border-black py-6 md:border-x md:border-y-0 md:py-0">
-          <h3 className="text-lg font-semibold">Adresse</h3>
-
-          <div className="flex items-center justify-center gap-2">
-            <MapPin size={18} />
-            <div>
-              <p>lot F634 Parcelle {`"M"`}</p>
-              <p>Tokan, Abomey-Calavi</p>
+          <div className="flex flex-col gap-3 pt-6 md:px-8 md:pt-0 items-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-black/60">
+              Horaires
+            </p>
+            <div className="flex items-start gap-3">
+              <Clock size={18} strokeWidth={2} className="mt-0.5 shrink-0" />
+              <p className="leading-6">
+                Du lundi au vendredi
+                <br />
+                07h00 – 22h00
+              </p>
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold">Horaires</h3>
+      <ConduitLine className="bg-(--orange)" />
 
-          <div className="flex items-center justify-center gap-2">
-            <Clock size={18} />
-            <p>Du lundi au vendredi<br />07h00 - 22h00</p>
+      {/* ----------------------------------------------------------- */}
+      {/* Bas du footer — même palette chaude que le hero              */}
+      {/* ----------------------------------------------------------- */}
+      <section className="bg-gradient-to-b from-[#2a1810] to-[#150d08] px-6 py-14 text-white">
+        <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-4">
+          {/* Logo */}
+          <div className="flex flex-col gap-4">
+            <div className="relative h-[56px] w-[56px] overflow-hidden rounded-full ring-2 ring-(--orange)">
+              <Image src={logo} alt="LTM+ Logo" fill className="object-cover" />
+            </div>
+            <p className="text-sm text-white/70">Qualité · Résistance · Performance</p>
+          </div>
+
+          {/* Navigation */}
+          <div>
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
+              Navigation
+            </h3>
+            <nav className="flex flex-col gap-3">
+              {NAV_LINKS.map(({ name, href, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="group flex items-center gap-3 text-sm text-white/85 transition hover:text-(--orange)"
+                >
+                  <Icon size={18} strokeWidth={2} />
+                  {name}
+                  <ArrowUpRight
+                    size={13}
+                    strokeWidth={2}
+                    className="opacity-0 transition group-hover:opacity-100"
+                  />
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
+              Nos services
+            </h3>
+            <ul className="flex flex-col gap-3 text-sm text-white/85">
+              {SERVICES.map((service) => (
+                <li key={service} className="flex items-center gap-3">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-(--orange)" />
+                  {service}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* À propos */}
+          <div>
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
+              LTM+
+            </h3>
+            <p className="text-sm leading-7 text-white/70">
+              Fabricant de tubes électriques offrant des produits fiables,
+              résistants et conformes aux normes de qualité.
+            </p>
           </div>
         </div>
-
       </section>
 
-      {/* Bas du footer */}
-      <section className="grid gap-10 bg-[#363636] px-6 py-10 text-white md:grid-cols-4">
-
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-3">
-          <Image
-            src={logo}
-            width={60}
-            alt="LTM+ Logo"
-          />
-          <p className="text-center">
-            Qualité • Résistance • Performance
-          </p>
-        </div>
-        <div>
-          <h3 className="mb-4 font-semibold">Navigation</h3>
-
-          <nav className="flex flex-col gap-3">
-            <Link
-              href="/"
-              className="flex items-center gap-2 transition hover:text-orange-300"
-            >
-              <Home size={18} />
-              Accueil
-            </Link>
-
-            <Link
-              href="/catalog"
-              className="flex items-center gap-2 transition hover:text-orange-300"
-            >
-              <Package size={18} />
-              Catalogue
-            </Link>
-
-            <Link
-              href="/contact"
-              className="flex items-center gap-2 transition hover:text-orange-300"
-            >
-              <Contact size={18} />
-              Contact
-            </Link>
-          </nav>
-        </div>
-        <div>
-          <h3 className="mb-4 font-semibold">Nos services</h3>
-
-          <ul className="space-y-3 text-sm">
-            <li>Fabrication de tuyaux</li>
-            <li>Distribution</li>
-            <li>Conseils techniques</li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="mb-4 font-semibold">LTM+</h3>
-
-          <p className="text-sm leading-7 text-gray-300">
-            Fabricant de tubes électriques offrant des produits
-            fiables, résistants et conformes aux normes de qualité.
-          </p>
-        </div>
-
-      </section>
-      <div className="border-t border-white/10 bg-[#2b2b2b] py-5 text-center text-sm text-gray-400">
+      <div className="border-t border-white/10 bg-[#0f0906] py-5 text-center text-sm text-white/40">
         © {new Date().getFullYear()} LTM+. Tous droits réservés.
       </div>
     </footer>
