@@ -37,7 +37,6 @@ export default function Cart() {
 
   return (
     <main className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 lg:px-10 lg:py-16">
-      {/* Header */}
       <div className="mb-8 sm:mb-10">
         <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[var(--orange)]">
           <ShoppingBag size={18} />
@@ -60,12 +59,7 @@ export default function Cart() {
           </p>
         </div>
       </div>
-
-      {/* Main layout */}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-        {/* =========================
-            CART ITEMS
-            ========================= */}
         <section className="space-y-4">
           {items.map((item) => (
             <article
@@ -73,14 +67,11 @@ export default function Cart() {
               className="group rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5 dark:border-white/10 dark:bg-white/[0.03]"
             >
               <div className="flex gap-4 sm:gap-5">
-                {/* Product image */}
                 <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-neutral-100 sm:h-28 sm:w-28 dark:bg-white/5">
                   <div className="flex h-full items-center justify-center text-xs text-neutral-400">
                     Image
                   </div>
                 </div>
-
-                {/* Product information */}
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -93,7 +84,6 @@ export default function Cart() {
                       </p>
                     </div>
 
-                    {/* Delete */}
                     <button
                       type="button"
                       aria-label={`Supprimer ${item.name}`}
@@ -103,9 +93,7 @@ export default function Cart() {
                     </button>
                   </div>
 
-                  {/* Bottom row */}
                   <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-5">
-                    {/* Quantity */}
                     <div className="flex items-center rounded-lg border border-neutral-200 dark:border-white/10">
                       <button
                         type="button"
@@ -125,8 +113,6 @@ export default function Cart() {
                         <Plus size={15} />
                       </button>
                     </div>
-
-                    {/* Price */}
                     <p className="text-base font-bold text-[var(--orange)] sm:text-lg">
                       {(item.price * item.quantity).toLocaleString("fr-FR")} FCFA
                     </p>
@@ -136,7 +122,6 @@ export default function Cart() {
             </article>
           ))}
 
-          {/* Continue shopping */}
           <div className="pt-2">
             <a
               href="/catalog"
@@ -147,12 +132,8 @@ export default function Cart() {
           </div>
         </section>
 
-        {/* =========================
-            CHECKOUT
-            ========================= */}
         <aside className="lg:sticky lg:top-24">
           <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
-            {/* Summary header */}
             <div className="border-b border-neutral-200 p-6 dark:border-white/10">
               <h2 className="text-xl font-bold text-neutral-900 dark:text-white">
                 Récapitulatif
@@ -190,7 +171,6 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Customer information */}
             <div className="space-y-4 p-6">
               <div>
                 <h3 className="font-semibold text-neutral-900 dark:text-white">
@@ -221,7 +201,6 @@ export default function Cart() {
               />
             </div>
 
-            {/* Payment */}
             <div className="border-t border-neutral-200 p-6 dark:border-white/10">
               <div className="mb-4 flex items-center gap-2">
                 <CreditCard size={18} className="text-[var(--orange)]" />
@@ -258,7 +237,6 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* Checkout button */}
             <div className="p-6 pt-0">
               <button
                 type="button"

@@ -6,9 +6,6 @@ import Image from "next/image";
 export default function Contact() {
   return (
     <main className="mx-auto grid min-h-screen w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 lg:grid-cols-2 lg:gap-14 lg:px-10 lg:py-16">
-      {/* =========================
-          FORMULAIRE
-          ========================= */}
       <section className="flex flex-col">
         <span className="mb-3 text-sm font-semibold uppercase tracking-widest text-orange-500">
           Contact
@@ -75,7 +72,6 @@ export default function Contact() {
           </Button>
         </form>
 
-        {/* Informations */}
         <div className="mt-10 grid grid-cols-1 gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-4">
           <div className="rounded-2xl bg-neutral-100 p-4 sm:p-5 dark:bg-white/5">
             <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-500/10">
@@ -121,11 +117,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* =========================
-          IMAGE + MAP
-          ========================= */}
       <section className="flex flex-col gap-5">
-        {/* Image */}
         <div className="relative h-[420px] overflow-hidden rounded-3xl sm:h-[500px] lg:h-[560px]">
           <Image
             src={work}
@@ -149,7 +141,6 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Google Maps */}
         <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-neutral-100 dark:border-white/10 dark:bg-white/5">
           <div className="flex items-center justify-between px-5 py-4">
             <div>

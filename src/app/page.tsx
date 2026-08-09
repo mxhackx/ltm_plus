@@ -52,11 +52,7 @@ export default function Home() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-white text-neutral-900 transition-colors duration-300 dark:bg-[#090909] dark:text-white">
       <main>
-        {/* =========================================================
-            HERO
-        ========================================================= */}
         <section className="relative overflow-hidden bg-[#120b07]">
-          {/* Background */}
           <div className="absolute inset-0">
             <Image
               src={worker}
@@ -71,8 +67,6 @@ export default function Home() {
                 lg:object-[62%_center]
               "
             />
-
-            {/* Main gradient */}
             <div
               className="
                 absolute inset-0
@@ -86,15 +80,9 @@ export default function Home() {
                 sm:to-[#120b07]/20
               "
             />
-
-            {/* Additional mobile overlay */}
             <div className="absolute inset-0 bg-[#120b07]/25 sm:hidden" />
-
-            {/* Bottom fade */}
             <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#120b07] to-transparent" />
           </div>
-
-          {/* Orange glow */}
           <div
             aria-hidden="true"
             className="
@@ -114,10 +102,6 @@ export default function Home() {
               sm:blur-[140px]
             "
           />
-
-          {/* =====================================================
-              HERO CONTENT
-          ===================================================== */}
           <div
             className="
               relative
@@ -139,7 +123,6 @@ export default function Home() {
                 sm:max-w-2xl
               "
             >
-              {/* Label */}
               <div className="mb-5 flex items-center gap-3 sm:mb-6">
                 <span className="h-px w-7 bg-(--orange) sm:w-10" />
 
@@ -147,8 +130,6 @@ export default function Home() {
                   LTM+ Industries
                 </span>
               </div>
-
-              {/* Title */}
               <h1
                 className="
                   max-w-[340px]
@@ -169,8 +150,6 @@ export default function Home() {
                 Choisissez{" "}
                 <span className="text-(--orange)">LTM+</span>
               </h1>
-
-              {/* Description */}
               <p
                 className="
                   mt-6
@@ -188,8 +167,6 @@ export default function Home() {
                 installations et répondre aux exigences des professionnels
                 comme des particuliers.
               </p>
-
-              {/* CTA */}
               <div
                 className="
                   mt-7
@@ -255,10 +232,6 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-
-            {/* =====================================================
-                PRODUCTS
-            ===================================================== */}
             <div
               className="
                 relative
@@ -274,7 +247,6 @@ export default function Home() {
                 w-full
               "
             >
-              {/* Heading */}
               <div className="mb-4 flex items-end justify-between sm:mb-5">
                 <div>
                   <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-[10px]">
@@ -300,8 +272,6 @@ export default function Home() {
                   Voir le catalogue →
                 </Link>
               </div>
-
-              {/* Product carousel */}
               <div
                 className="
                   -mx-5
@@ -340,14 +310,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          {/* Small bottom spacing */}
           <div className="h-3 sm:h-6" />
         </section>
-
-        {/* =========================================================
-            PROCESS
-        ========================================================= */}
         <section
           className="
             mx-auto
@@ -361,7 +325,6 @@ export default function Home() {
             lg:py-32
           "
         >
-          {/* Heading */}
           <div className="max-w-2xl">
             <div className="mb-4 flex items-center gap-3">
               <span className="h-px w-8 bg-(--orange) sm:w-10" />
@@ -403,8 +366,6 @@ export default function Home() {
               fiabilité, résistance et qualité à nos produits.
             </p>
           </div>
-
-          {/* Steps */}
           <div
             className="
               mt-12

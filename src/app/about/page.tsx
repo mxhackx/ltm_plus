@@ -5,7 +5,6 @@ import { Award, ShieldCheck, Truck, Users } from "lucide-react";
 export default function About() {
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
-      {/* Hero */}
       <section className="grid items-center gap-10 lg:grid-cols-2">
         <div>
           <span className="rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-600">
@@ -63,7 +62,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Valeurs */}
       <section className="mt-24">
         <h2 className="mb-10 text-center text-4xl font-bold">
           Pourquoi nous choisir ?
@@ -120,7 +118,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Mission */}
       <section className="mt-24 rounded-3xl bg-[var(--orange)] p-14 text-white">
         <h2 className="text-4xl font-bold">
           Notre mission
@@ -129,7 +126,7 @@ export default function About() {
         <p className="mt-6 max-w-4xl text-lg leading-8 text-white/90">
           Offrir aux particuliers, artisans et entreprises des solutions
           électriques de qualité, accessibles et adaptées à tous leurs projets.
-          Nous mettons l'accent sur la satisfaction client, la disponibilité des
+          Nous mettons l' accent sur la satisfaction client, la disponibilité des
           produits et un accompagnement personnalisé.
         </p>
       </section>

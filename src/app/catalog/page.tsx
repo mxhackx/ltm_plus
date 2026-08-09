@@ -6,9 +6,6 @@ import tube from "@/../public/tube.jpg";
 import CatalogCard from "@/components/card_catalog";
 import { useMemo, useRef, useState, type FormEvent } from "react";
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 type Product = {
   img: StaticImageData;
@@ -21,10 +18,6 @@ type Product = {
 };
 
 const CATEGORIES = ["Toutes catégories", "Tube IRL", "Tube ICTA", "Gaine annelée"] as const;
-
-// ---------------------------------------------------------------------------
-// Mock data — replace with real data fetching (API route / server component)
-// ---------------------------------------------------------------------------
 
 const CATALOG: Product[] = [
   { img: tube, name: "Tube IRL 3221", description: "Tube électrique rigide gris pour installation apparente", category: "Tube IRL", dimension: "Ø20 x 2000 mm", barprice: 2500, price: 2000 },
@@ -41,9 +34,7 @@ const CATALOG: Product[] = [
 
 const HERO_SLIDES = CATALOG.slice(0, 3);
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+
 
 export default function Catalog() {
   const [slide, setSlide] = useState(0);
@@ -72,12 +63,8 @@ export default function Catalog() {
 
   return (
     <main className="flex flex-col w-full bg-[#F6F5F1] text-[#14171A] dark:bg-[#14171A] dark:text-[#F6F5F1]">
-      {/* ------------------------------------------------------------------ */}
-      {/* Hero + spec sheet                                                  */}
-      {/* ------------------------------------------------------------------ */}
       <section className="flex flex-col gap-8 px-6 md:px-10 py-12 max-w-6xl mx-auto w-full">
         <div className="grid md:grid-cols-[1.1fr_1fr] gap-10 items-start">
-          {/* Carousel */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#DADFE3] dark:border-[#2A2E33] bg-white dark:bg-[#1B1F23]">
               <Image src={hero.img} alt={hero.name} fill className="object-cover" priority />
@@ -116,7 +103,6 @@ export default function Catalog() {
             </div>
           </div>
 
-          {/* Spec sheet */}
           <div className="flex flex-col gap-4">
             <p className="font-mono text-xs tracking-widest uppercase text-[#C97D3E]">
               Fiche technique
@@ -146,7 +132,6 @@ export default function Catalog() {
           </div>
         </div>
 
-        {/* Toolbar */}
         <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-3 mt-4">
           <div className="flex-1 min-w-[220px] flex items-center gap-2 border border-[#DADFE3] dark:border-[#2A2E33] rounded-md px-3 py-2 bg-white dark:bg-[#1B1F23]">
             <Search size={18} className="text-[#7A828A]" aria-hidden />
@@ -184,9 +169,6 @@ export default function Catalog() {
 
       <hr className="border-[#DADFE3] dark:border-[#2A2E33]" />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Product grid                                                       */}
-      {/* ------------------------------------------------------------------ */}
       <section className="px-6 md:px-10 py-10 max-w-6xl mx-auto w-full">
         <div className="flex items-baseline justify-between mb-6">
           <h2 className="text-lg font-semibold">

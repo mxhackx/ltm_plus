@@ -88,7 +88,6 @@ export default function Header() {
   const [menu, setMenu] = useState(false);
   const pathname = usePathname();
 
-  // Initialisation du thème
   useEffect(() => {
     const isDark = getDarkLocaltorage();
 
@@ -99,12 +98,10 @@ export default function Header() {
     }
   }, []);
 
-  // Sauvegarde du thème
   useEffect(() => {
     localStorage.setItem("dark", dark ? "true" : "false");
   }, [dark]);
 
-  // Bloque le scroll lorsque le menu mobile est ouvert
   useEffect(() => {
     document.body.style.overflow = menu ? "hidden" : "";
 
@@ -113,7 +110,6 @@ export default function Header() {
     };
   }, [menu]);
 
-  // Fermer le menu avec Escape
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -131,7 +127,6 @@ export default function Header() {
   return (
     <header className="relative z-30">
       <nav className="flex items-center justify-between px-6 py-4">
-        {/* Logo */}
         <Link href="/" className="relative h-11 w-11 overflow-hidden rounded-full">
           <Image
             src={logo}
@@ -142,7 +137,6 @@ export default function Header() {
           />
         </Link>
 
-        {/* Navigation desktop uniquement */}
         <div className="hidden items-center gap-7 text-sm text-neutral-700 dark:text-white/85 md:flex">
           {LINKS.map(({ name, href }) => {
             const active = pathname === href;
@@ -163,11 +157,9 @@ export default function Header() {
           })}
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-2 text-neutral-800 dark:text-white">
           <ThemeToggle dark={dark} setDark={setDark} />
 
-          {/* Contact */}
           <Link
             href="/contact"
             aria-label="Contact"
@@ -176,7 +168,6 @@ export default function Header() {
             <Phone size={20} />
           </Link>
 
-          {/* Catalogue */}
           <Link
             href="/catalog"
             aria-label="Catalogue"
@@ -185,7 +176,6 @@ export default function Header() {
             <ShoppingCart size={20} />
           </Link>
 
-          {/* Bouton hamburger : MOBILE UNIQUEMENT */}
           <button
             type="button"
             aria-label="Ouvrir le menu"
@@ -198,12 +188,6 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* =========================================================
-          MENU MOBILE
-          Tout ce qui suit est caché sur desktop
-          ========================================================= */}
-
-      {/* Overlay + blur de la page */}
       <div
         onClick={() => setMenu(false)}
         aria-hidden={!menu}
@@ -214,20 +198,17 @@ export default function Header() {
         }`}
       />
 
-      {/* Menu mobile */}
       <aside
         aria-hidden={!menu}
         className={`fixed right-0 top-0 z-50 h-screen w-[320px] max-w-[90%] overflow-y-auto border-l border-white/15 bg-gradient-to-br from-(--orange)/30 via-black/80 to-black p-6 text-white shadow-2xl backdrop-blur-2xl backdrop-saturate-150 transition-transform duration-300 md:hidden ${
           menu ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* Glow décoratif */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-(--orange) opacity-30 blur-[90px]"
         />
 
-        {/* Header du menu */}
         <div className="relative mb-10 flex items-center justify-between">
           <div className="relative h-[44px] w-[44px] overflow-hidden rounded-full ring-2 ring-(--orange)">
             <Image
@@ -248,7 +229,6 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Liens */}
         <div className="relative flex flex-col gap-2.5">
           {LINKS.map(({ name, href, icon: Icon }) => {
             const active = pathname === href;
@@ -274,7 +254,6 @@ export default function Header() {
           })}
         </div>
 
-        {/* Bouton contact */}
         <div className="absolute bottom-8 left-6 right-6">
           <Link
             href="/contact"

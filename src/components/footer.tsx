@@ -40,9 +40,6 @@ function ConduitLine({ className = "" }: { className?: string }) {
 export default function Footer() {
   return (
     <footer className="">
-      {/* ----------------------------------------------------------- */}
-      {/* Info bar — contact / adresse / horaires                     */}
-      {/* ----------------------------------------------------------- */}
       <section className="bg-(--orange) text-black">
         <div className="mx-auto grid max-w-6xl gap-8 divide-y divide-black/15 px-6 py-10 md:grid-cols-3 md:divide-x md:divide-y-0">
           <div className="flex flex-col gap-3 pb-6 md:px-8 md:pb-0 items-center">
@@ -91,9 +88,6 @@ export default function Footer() {
 
       <ConduitLine className="bg-(--orange)" />
 
-      {/* ----------------------------------------------------------- */}
-      {/* Bas du footer — même palette chaude que le hero              */}
-      {/* ----------------------------------------------------------- */}
       <section className="bg-gradient-to-b from-[#2a1810] to-[#150d08] px-6 py-14 text-white">
         <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-4">
           {/* Logo */}
@@ -104,7 +98,6 @@ export default function Footer() {
             <p className="text-sm text-white/70">Qualité · Résistance · Performance</p>
           </div>
 
-          {/* Navigation */}
           <div>
             <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
               Navigation
@@ -128,7 +121,6 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Services */}
           <div>
             <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
               Nos services
@@ -143,7 +135,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* À propos */}
           <div>
             <h3 className="mb-5 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">
               LTM+

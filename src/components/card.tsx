@@ -29,20 +29,16 @@ export default function MyCard({
         />
       </div>
 
-      {/* Card */}
       <div className="relative overflow-hidden rounded-2xl border border-neutral-200 mylinear px-5 pb-5 pt-11 shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl dark:border-white/10 dark:bg-neutral-900">
-        {/* Orange glow */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-(--orange) opacity-10 blur-2xl transition duration-300 group-hover:opacity-20"
         />
 
-        {/* Product name */}
         <h3 className="relative truncate text-sm font-semibold text-neutral-900 dark:text-white">
           {name}
         </h3>
 
-        {/* Price */}
         <div className="relative mt-3 flex items-end justify-between gap-3">
           <div className="flex items-baseline gap-1">
             <span className="text-lg font-bold text-(--orange)">
@@ -59,7 +55,6 @@ export default function MyCard({
           </span>
         </div>
 
-        {/* Bottom accent */}
         <div className="mt-4 h-px w-full bg-neutral-100 dark:bg-white/10" />
 
         <p className="mt-3 text-[11px] text-neutral-400">
