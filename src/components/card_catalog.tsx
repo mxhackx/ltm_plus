@@ -2,7 +2,7 @@
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import { Button } from "./ui/button";
-function handleClick(e){
+function handleClick(){
 
 }
 interface Catalog {
