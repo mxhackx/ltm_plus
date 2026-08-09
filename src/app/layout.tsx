@@ -1,5 +1,9 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+export const metadata: Metadata = {
+  title: "LTM",
+  description: "Enteprise de production et de vente de tubes electriques orange",
+};
 export default function RootLayout({
   children,
 }: Readonly<{
