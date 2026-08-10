@@ -5,6 +5,7 @@ import Image from "next/image";
 import logo from "@/../public/logo.png";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import "@/app/globals.css";
 import {
   Moon,
   Sun,
@@ -51,6 +52,7 @@ const LINKS = [
   { name: "Contact", href: "/contact", icon: Phone },
   { name: "À propos", href: "/about", icon: Info },
 ];
+const MENU_CONTACT = "Nous contacter";
 
 function ThemeToggle({
   dark,
@@ -245,7 +247,6 @@ export default function Header() {
                 }`}
               >
                 <Icon size={18} />
-
                 <span className="flex-1">{name}</span>
 
                 <ChevronRight size={16} className="opacity-60" />
@@ -261,7 +262,7 @@ export default function Header() {
             className="flex items-center justify-center gap-2 rounded-full bg-(--orange) py-3 font-medium text-black shadow-[0_0_25px_-6px_var(--orange)] transition hover:brightness-110"
           >
             <Phone size={18} />
-            Nous contacter
+            {MENU_CONTACT}
           </Link>
         </div>
       </aside>

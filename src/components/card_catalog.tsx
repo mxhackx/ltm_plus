@@ -23,8 +23,8 @@ export default function CatalogCard({
   onOrder,
 }: CatalogCardProps) {
   return (
-    <article className="group flex w-full max-w-sm flex-col overflow-hidden rounded-2xl border bg-background shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <div className="flex items-center justify-center bg-muted/30 p-6">
+    <article onClick={onOrder} className="group relative flex w-full max-w-sm flex-col overflow-hidden rounded-2xl border bg-background shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+      <div className="relative flex items-center justify-center bg-muted/30 p-6">
         <Image
           src={img}
           alt={description}
@@ -53,10 +53,9 @@ export default function CatalogCard({
 
         <Button
           type="button"
-          onClick={onOrder}
           className="mt-auto w-full"
         >
-          Commander
+          Voir
         </Button>
       </div>
     </article>

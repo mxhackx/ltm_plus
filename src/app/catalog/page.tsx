@@ -5,6 +5,7 @@ import Image, { type StaticImageData } from "next/image";
 import tube from "@/../public/tube.jpg";
 import CatalogCard from "@/components/card_catalog";
 import { useMemo, useRef, useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
 
 
 type Product = {
@@ -66,7 +67,7 @@ export default function Catalog() {
       <section className="flex flex-col gap-8 px-6 md:px-10 py-12 max-w-6xl mx-auto w-full">
         <div className="grid md:grid-cols-[1.1fr_1fr] gap-10 items-start">
           <div className="flex flex-col items-center gap-4">
-            <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#DADFE3] dark:border-[#2A2E33] bg-white dark:bg-[#1B1F23]">
+            <div className="relative w-full aspect-4/3 rounded-lg overflow-hidden border border-[#DADFE3] dark:border-[#2A2E33] bg-white dark:bg-[#1B1F23]">
               <Image src={hero.img} alt={hero.name} fill className="object-cover" priority />
               <button
                 type="button"
@@ -130,8 +131,8 @@ export default function Catalog() {
               </div>
             </dl>
           </div>
-        </div>
-
+          <Button className="bg-white w-full p-4">Commander</Button>
+          </div>
         <form onSubmit={handleSearch} className="flex flex-wrap items-center gap-3 mt-4">
           <div className="flex-1 min-w-[220px] flex items-center gap-2 border border-[#DADFE3] dark:border-[#2A2E33] rounded-md px-3 py-2 bg-white dark:bg-[#1B1F23]">
             <Search size={18} className="text-[#7A828A]" aria-hidden />
@@ -182,10 +183,11 @@ export default function Catalog() {
             catégorie.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filtered.map((item) => (
-              <CatalogCard key={item.name} {...item} />
-            ))}
+          <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filtered.map((item) => {
+              const id = CATALOG.findIndex((product) => product.name === item.name);
+              return <CatalogCard key={item.name} {...item} onOrder={() => {setSlide(id)}}/>
+             })}
           </div>
         )}
       </section>
