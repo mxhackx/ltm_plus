@@ -15,3 +15,6 @@ pnpm-debug.log*
 *.tsbuildinfo
 .vercel/
 .vscode/
+/src/generated/prisma
+
+/src/generated/prisma
