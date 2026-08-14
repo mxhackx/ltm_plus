@@ -7,6 +7,7 @@ type MyCardProps = {
   price: number;
   barprice: number;
   devise?: string;
+  indicatif?: string;
 };
 
 export default function MyCard({
@@ -16,6 +17,7 @@ export default function MyCard({
   price,
   barprice,
   devise = "F",
+  indicatif = "Prix indicatif",
 }: MyCardProps) {
   return (
     <article className="group relative w-full max-w-[260px]">
@@ -58,7 +60,7 @@ export default function MyCard({
         <div className="mt-4 h-px w-full bg-neutral-100 dark:bg-white/10" />
 
         <p className="mt-3 text-[11px] text-neutral-400">
-          Prix indicatif
+          {indicatif}
         </p>
       </div>
     </article>
