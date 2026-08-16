@@ -190,7 +190,7 @@ export async function deleteOrder(orderId: number) {
     },
   });
 
-  revalidatePath("/account");
+  revalidatePath("/dashboard");
 
   revalidatePath(
     `/dashboard/orders/${orderId}`

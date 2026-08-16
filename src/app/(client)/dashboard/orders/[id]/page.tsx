@@ -216,7 +216,7 @@ export default async function OrderPage({
         ================================================== */}
 
         <Link
-          href="/account"
+          href="/dashboard"
           className="
             group
             inline-flex
