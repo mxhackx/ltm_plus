@@ -30,6 +30,7 @@ model Product {
   dimensions  String
   category    String
   description String
+  imageUrl    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -161,4 +162,29 @@ model Contact {
   service  String
 
   createdAt DateTime @default(now())
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  passwordHash String
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions AdminSession[]
+}
+
+model AdminSession {
+  id        String   @id
+  adminId   Int
+  expiresAt DateTime
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import {
   ArrowRight,
@@ -29,8 +28,6 @@ type User = {
 type LoginFormProps = {
   onClose: () => void;
   onLoggedIn: (user: User) => void;
-
-  // Permet de passer vers RegisterForm
   onRegister: () => void;
 };
 
@@ -43,8 +40,6 @@ export default function LoginForm({
   onLoggedIn,
   onRegister,
 }: LoginFormProps) {
-  const router = useRouter();
-
   // ====================================================
   // STATE
   // ====================================================
@@ -52,11 +47,8 @@ export default function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // ====================================================
   // LOGIN
@@ -73,11 +65,10 @@ export default function LoginForm({
     // NORMALISATION
     // ==================================================
 
-    const cleanEmail =
-      email.trim().toLowerCase();
+    const cleanEmail = email.trim().toLowerCase();
 
     // ==================================================
-    // VALIDATION CLIENT
+    // VALIDATION
     // ==================================================
 
     if (!cleanEmail || !password) {
@@ -96,14 +87,13 @@ export default function LoginForm({
 
     try {
       // ==================================================
-      // APPEL SERVER ACTION
+      // SERVER ACTION
       // ==================================================
 
-      const result =
-        await loginUser({
-          email: cleanEmail,
-          password,
-        });
+      const result = await loginUser({
+        email: cleanEmail,
+        password,
+      });
 
       // ==================================================
       // ERREUR
@@ -111,9 +101,12 @@ export default function LoginForm({
 
       if (!result.success) {
         setError(result.error);
-
         return;
       }
+
+      // ==================================================
+      // SUCCÈS
+      // ==================================================
 
       onLoggedIn(result.user);
     } catch (error) {
@@ -128,6 +121,18 @@ export default function LoginForm({
     } finally {
       setLoading(false);
     }
+  };
+
+  // ====================================================
+  // PASSER À L'INSCRIPTION
+  // ====================================================
+
+  const handleRegister = () => {
+    if (loading) {
+      return;
+    }
+
+    onRegister();
   };
 
   // ====================================================
@@ -205,6 +210,7 @@ export default function LoginForm({
           type="button"
           onClick={onClose}
           aria-label="Fermer"
+          disabled={loading}
           className="
             absolute
             right-4
@@ -215,6 +221,8 @@ export default function LoginForm({
             transition
             hover:bg-black/5
             hover:text-(--orange)
+            disabled:cursor-not-allowed
+            disabled:opacity-50
             dark:hover:bg-white/10
           "
         >
@@ -334,10 +342,7 @@ export default function LoginForm({
                 type="email"
                 value={email}
                 onChange={(event) => {
-                  setEmail(
-                    event.target.value
-                  );
-
+                  setEmail(event.target.value);
                   setError("");
                 }}
                 placeholder="jean@email.com"
@@ -405,10 +410,7 @@ export default function LoginForm({
                 type="password"
                 value={password}
                 onChange={(event) => {
-                  setPassword(
-                    event.target.value
-                  );
-
+                  setPassword(event.target.value);
                   setError("");
                 }}
                 placeholder="••••••••"
@@ -527,12 +529,12 @@ export default function LoginForm({
               dark:text-neutral-400
             "
           >
-            Vous n'avez pas encore de compte ?
+            Vous n&apos;avez pas encore de compte ?
           </p>
 
           <button
             type="button"
-            onClick={onRegister}
+            onClick={handleRegister}
             disabled={loading}
             className="
               mt-3

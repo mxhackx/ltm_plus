@@ -2,12 +2,13 @@
   "/(client)/about/page": "app/(client)/about/page.js",
   "/(client)/catalog/page": "app/(client)/catalog/page.js",
   "/(client)/contact/page": "app/(client)/contact/page.js",
-  "/(client)/dashboard/orders/[id]/page": "app/(client)/dashboard/orders/[id]/page.js",
   "/(client)/dashboard/page": "app/(client)/dashboard/page.js",
   "/(client)/page": "app/(client)/page.js",
   "/(client)/panier/page": "app/(client)/panier/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/api/orders/[id]/route": "app/api/orders/[id]/route.js",
-  "/api/orders/route": "app/api/orders/route.js",
+  "/admin/(protected)/contacts/page": "app/admin/(protected)/contacts/page.js",
+  "/admin/(protected)/orders/page": "app/admin/(protected)/orders/page.js",
+  "/admin/(protected)/page": "app/admin/(protected)/page.js",
+  "/admin/(protected)/products/page": "app/admin/(protected)/products/page.js",
   "/api/products/route": "app/api/products/route.js"
 }

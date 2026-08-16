@@ -160,13 +160,9 @@ function getDarkStorage(): boolean | undefined {
 
 function applyDarkMode(dark: boolean) {
   if (dark) {
-    document.documentElement.classList.add(
-      "dark"
-    );
+    document.documentElement.classList.add("dark");
   } else {
-    document.documentElement.classList.remove(
-      "dark"
-    );
+    document.documentElement.classList.remove("dark");
   }
 
   return dark;
@@ -205,9 +201,7 @@ function ThemeToggle({
       type="button"
       role="switch"
       aria-checked={dark}
-      aria-label={
-        HEADER_DATA.theme.ariaLabel
-      }
+      aria-label={HEADER_DATA.theme.ariaLabel}
       onClick={handleClick}
       className="
         relative
@@ -273,7 +267,7 @@ export default function Header() {
   const router = useRouter();
 
   // ====================================================
-  // ÉTATS
+  // ETATS
   // ====================================================
 
   const [dark, setDark] = useState(
@@ -404,6 +398,16 @@ export default function Header() {
   };
 
   // ====================================================
+  // INSCRIPTION
+  // ====================================================
+
+  const handleRegister = () => {
+    setMenu(false);
+    setShowLogin(false);
+    setShowRegister(true);
+  };
+
+  // ====================================================
   // UTILISATEUR CONNECTÉ
   // ====================================================
 
@@ -418,16 +422,6 @@ export default function Header() {
 
     router.refresh();
     router.push("/dashboard");
-  };
-
-  // ====================================================
-  // INSCRIPTION
-  // ====================================================
-
-  const handleRegister = () => {
-    setMenu(false);
-    setShowLogin(false);
-    setShowRegister(true);
   };
 
   // ====================================================
@@ -573,10 +567,6 @@ export default function Header() {
               const active =
                 pathname === href;
 
-              // ------------------------------------------
-              // MON ESPACE
-              // ------------------------------------------
-
               if (
                 href ===
                 HEADER_DATA.actions.dashboard
@@ -603,10 +593,6 @@ export default function Header() {
                   </button>
                 );
               }
-
-              // ------------------------------------------
-              // LIEN NORMAL
-              // ------------------------------------------
 
               return (
                 <Link
@@ -643,23 +629,18 @@ export default function Header() {
           "
         >
 
-          {/* =================================================
-              THEME
-          ================================================= */}
+          {/* THEME */}
 
           <ThemeToggle
             dark={dark}
             setDark={setDark}
           />
 
-          {/* =================================================
-              WHATSAPP
-          ================================================= */}
+          {/* WHATSAPP */}
 
           <a
             href={
-              HEADER_DATA.supplier.whatsapp
-                .href
+              HEADER_DATA.supplier.whatsapp.href
             }
             target="_blank"
             rel="noopener noreferrer"
@@ -691,9 +672,7 @@ export default function Header() {
             </svg>
           </a>
 
-          {/* =================================================
-              PANIER
-          ================================================= */}
+          {/* PANIER */}
 
           <Link
             href={
@@ -720,22 +699,13 @@ export default function Header() {
           ================================================= */}
 
           {loadingUser ? (
-            <div
-              className="
-                rounded-full
-                p-2
-              "
-            >
+            <div className="rounded-full p-2">
               <Loader2
                 size={20}
                 className="animate-spin"
               />
             </div>
           ) : user ? (
-
-            /* =============================================
-               UTILISATEUR CONNECTÉ
-            ============================================= */
 
             <button
               type="button"
@@ -791,10 +761,6 @@ export default function Header() {
 
           ) : (
 
-            /* =============================================
-               UTILISATEUR NON CONNECTÉ
-            ============================================= */
-
             <div
               className="
                 hidden
@@ -803,14 +769,11 @@ export default function Header() {
                 md:flex
               "
             >
-
               {/* CONNEXION */}
 
               <button
                 type="button"
-                onClick={
-                  handleLogin
-                }
+                onClick={handleLogin}
                 className="
                   rounded-lg
                   px-3
@@ -824,20 +787,16 @@ export default function Header() {
                 "
               >
                 {
-                  HEADER_DATA
-                    .actions
-                    .login
+                  HEADER_DATA.actions.login
                     .label
                 }
               </button>
 
-              {/* INSCRIPTION */}
+              {/* CRÉER UN COMPTE */}
 
               <button
                 type="button"
-                onClick={
-                  handleRegister
-                }
+                onClick={handleRegister}
                 className="
                   rounded-lg
                   bg-(--orange)
@@ -852,19 +811,14 @@ export default function Header() {
                 "
               >
                 {
-                  HEADER_DATA
-                    .actions
-                    .register
+                  HEADER_DATA.actions.register
                     .label
                 }
               </button>
-
             </div>
           )}
 
-          {/* =================================================
-              MOBILE MENU BUTTON
-          ================================================= */}
+          {/* MOBILE MENU */}
 
           <button
             type="button"
@@ -889,7 +843,6 @@ export default function Header() {
           >
             <Menu size={20} />
           </button>
-
         </div>
       </nav>
 
@@ -954,10 +907,7 @@ export default function Header() {
           }
         `}
       >
-
-        {/* =================================================
-            GLOW
-        ================================================= */}
+        {/* GLOW */}
 
         <div
           className="
@@ -975,9 +925,7 @@ export default function Header() {
           "
         />
 
-        {/* =================================================
-            MENU HEADER
-        ================================================= */}
+        {/* MENU HEADER */}
 
         <div
           className="
@@ -988,19 +936,15 @@ export default function Header() {
             justify-between
           "
         >
-
           {user ? (
-
             <button
               type="button"
               onClick={() => {
                 setMenu(false);
 
                 router.push(
-                  HEADER_DATA
-                    .actions
-                    .dashboard
-                    .href
+                  HEADER_DATA.actions
+                    .dashboard.href
                 );
               }}
               className="
@@ -1028,7 +972,6 @@ export default function Header() {
               </div>
 
               <div className="text-left">
-
                 <p
                   className="
                     text-sm
@@ -1049,12 +992,9 @@ export default function Header() {
                 >
                   {user.email}
                 </p>
-
               </div>
             </button>
-
           ) : (
-
             <div
               className="
                 relative
@@ -1068,9 +1008,7 @@ export default function Header() {
             >
               <Image
                 src={logo}
-                alt={
-                  HEADER_DATA.logo.alt
-                }
+                alt={HEADER_DATA.logo.alt}
                 fill
                 className="object-cover"
               />
@@ -1083,8 +1021,7 @@ export default function Header() {
               setMenu(false)
             }
             aria-label={
-              HEADER_DATA.actions.menu
-                .close
+              HEADER_DATA.actions.menu.close
             }
             className="
               rounded-full
@@ -1099,12 +1036,9 @@ export default function Header() {
           >
             <X size={20} />
           </button>
-
         </div>
 
-        {/* =================================================
-            LINKS
-        ================================================= */}
+        {/* LINKS */}
 
         <div
           className="
@@ -1114,20 +1048,14 @@ export default function Header() {
             gap-2.5
           "
         >
-
           {HEADER_DATA.navigation.links.map(
             ({
               name,
               href,
               icon: Icon,
             }) => {
-
               const active =
                 pathname === href;
-
-              // ------------------------------------------
-              // MON ESPACE
-              // ------------------------------------------
 
               if (
                 href ===
@@ -1138,9 +1066,9 @@ export default function Header() {
                   <button
                     key={href}
                     type="button"
-                    onClick={() => {
-                      handleDashboard();
-                    }}
+                    onClick={
+                      handleDashboard
+                    }
                     className={`
                       flex
                       w-full
@@ -1172,10 +1100,6 @@ export default function Header() {
                   </button>
                 );
               }
-
-              // ------------------------------------------
-              // LIEN NORMAL
-              // ------------------------------------------
 
               return (
                 <Link
@@ -1214,11 +1138,10 @@ export default function Header() {
               );
             }
           )}
-
         </div>
 
         {/* =================================================
-            LOGIN / REGISTER
+            LOGIN / REGISTER MOBILE
         ================================================= */}
 
         {!user && !loadingUser && (
@@ -1231,14 +1154,9 @@ export default function Header() {
               gap-2
             "
           >
-
-            {/* CONNEXION */}
-
             <button
               type="button"
-              onClick={
-                handleLogin
-              }
+              onClick={handleLogin}
               className="
                 rounded-xl
                 border
@@ -1258,13 +1176,9 @@ export default function Header() {
               Connexion
             </button>
 
-            {/* INSCRIPTION */}
-
             <button
               type="button"
-              onClick={
-                handleRegister
-              }
+              onClick={handleRegister}
               className="
                 rounded-xl
                 bg-(--orange)
@@ -1279,7 +1193,6 @@ export default function Header() {
             >
               Inscription
             </button>
-
           </div>
         )}
 
@@ -1314,7 +1227,6 @@ export default function Header() {
               disabled:opacity-50
             "
           >
-
             {loggingOut ? (
               <Loader2
                 size={17}
@@ -1327,7 +1239,6 @@ export default function Header() {
             {loggingOut
               ? "Déconnexion..."
               : "Se déconnecter"}
-
           </button>
         )}
 
@@ -1343,8 +1254,7 @@ export default function Header() {
         >
           <Link
             href={
-              HEADER_DATA.mobileMenu
-                .contact.href
+              HEADER_DATA.mobileMenu.contact.href
             }
             onClick={() =>
               setMenu(false)
@@ -1365,14 +1275,11 @@ export default function Header() {
             "
           >
             {
-              HEADER_DATA
-                .mobileMenu
-                .contact
+              HEADER_DATA.mobileMenu.contact
                 .label
             }
           </Link>
         </div>
-
       </aside>
 
       {/* =================================================
@@ -1386,6 +1293,9 @@ export default function Header() {
           }
           onLoggedIn={
             handleLoggedIn
+          }
+          onRegister={
+            handleRegister
           }
         />
       )}
@@ -1408,7 +1318,6 @@ export default function Header() {
           }}
         />
       )}
-
     </header>
   );
 }

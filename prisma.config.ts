@@ -10,6 +10,6 @@ export default defineConfig({
   },
 
   datasource: {
-    url: env("DATABASE_URL"),
+    url: env("STORAGE_DATABASE_URL"),
   },
 });

@@ -103,12 +103,7 @@ const shipping = false;
 // ============================================================
 
 function getProductKey(product: Product) {
-  return JSON.stringify([
-    product.id,
-    product.name,
-    product.price,
-    product.description,
-  ]);
+  return product.id;
 }
 
 // ============================================================
@@ -119,7 +114,7 @@ function getUniqueProducts(
   products: Product[]
 ): CartProduct[] {
   const groupedProducts =
-    new Map<string, CartProduct>();
+    new Map<number, CartProduct>();
 
   for (const product of products) {
     const key = getProductKey(product);
@@ -187,6 +182,18 @@ export default function Cart() {
   const ITEMS = useMemo(() => {
     return getUniqueProducts(local);
   }, [local]);
+
+  // ==========================================================
+  // NOMBRE TOTAL D'ARTICLES
+  // ==========================================================
+
+  const totalItems = useMemo(() => {
+    return ITEMS.reduce(
+      (total, item) =>
+        total + item.quantity,
+      0
+    );
+  }, [ITEMS]);
 
   // ==========================================================
   // CHARGEMENT DU PANIER
@@ -271,12 +278,15 @@ export default function Cart() {
             itemKey
         );
 
+      // Produit introuvable
       if (index === -1) {
         return previous;
       }
 
+      // Copie du tableau
       const newLocal = [...previous];
 
+      // Supprime UNE SEULE occurrence
       newLocal.splice(index, 1);
 
       return newLocal;
@@ -291,16 +301,14 @@ export default function Cart() {
     item: CartProduct
   ) {
     const {
-      quantity,
+      quantity: _quantity,
       ...product
     } = item;
 
-    setLocal((previous) => {
-      return [
-        ...previous,
-        product,
-      ];
-    });
+    setLocal((previous) => [
+      ...previous,
+      product,
+    ]);
   }
 
   // ==========================================================
@@ -345,66 +353,47 @@ export default function Cart() {
     const groupedProducts =
       getUniqueProducts(products);
 
-    // ========================================================
-    // FORMAT ATTENDU PAR L'API
-    //
-    // {
-    //   items: [
-    //     {
-    //       productId: 1,
-    //       quantity: 2
-    //     }
-    //   ],
-    //
-    //   customer: {
-    //     fullName: "...",
-    //     phone: "...",
-    //     address: "..."
-    //   }
-    // }
-    //
-    // Le userId n'est PAS envoyé.
-    // Le serveur le récupère avec getCurrentUser().
-    // ========================================================
+    const items =
+      groupedProducts.map(
+        (item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+        })
+      );
 
-    const items = groupedProducts.map(
-      (item) => ({
-        productId: item.id,
-        quantity: item.quantity,
-      })
-    );
+    const response =
+      await fetch(
+        "/api/orders",
+        {
+          method: "POST",
 
-    const response = await fetch(
-      "/api/orders",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify({
-          items,
-
-          customer: {
-            fullName:
-              fullName.trim(),
-
-            phone:
-              phone.trim(),
-
-            address:
-              address.trim(),
+          headers: {
+            "Content-Type":
+              "application/json",
           },
-        }),
-      }
-    );
+
+          body: JSON.stringify({
+            items,
+
+            customer: {
+              fullName:
+                fullName.trim(),
+
+              phone:
+                phone.trim(),
+
+              address:
+                address.trim(),
+            },
+          }),
+        }
+      );
 
     let data: any;
 
     try {
-      data = await response.json();
+      data =
+        await response.json();
     } catch {
       throw new Error(
         "Réponse invalide du serveur."
@@ -447,26 +436,14 @@ export default function Cart() {
       return;
     }
 
-    // ========================================================
-    // RESET MESSAGES
-    // ========================================================
-
     setError("");
     setSuccess("");
-
-    // ========================================================
-    // VALIDATION CLIENT
-    // ========================================================
 
     if (
       !validateCustomerInformation()
     ) {
       return;
     }
-
-    // ========================================================
-    // COPIE DU PANIER
-    // ========================================================
 
     const productsToOrder = [
       ...local,
@@ -475,10 +452,6 @@ export default function Cart() {
     setIsSubmitting(true);
 
     try {
-      // ======================================================
-      // ENREGISTRER LA COMMANDE EN DB
-      // ======================================================
-
       const result =
         await createOrder(
           productsToOrder
@@ -491,9 +464,6 @@ export default function Cart() {
 
       // ======================================================
       // WHATSAPP
-      //
-      // La commande est d'abord enregistrée
-      // en DB puis WhatsApp est ouvert.
       // ======================================================
 
       if (
@@ -511,7 +481,8 @@ export default function Cart() {
               )} ${TEXT.currency}`
           ).join("\n");
 
-        const message = `Bonjour, je souhaite passer la commande suivante :
+        const message =
+`Bonjour, je souhaite passer la commande suivante :
 
 ${orderMessage}
 
@@ -562,6 +533,7 @@ Total : ${total.toLocaleString(
       setSuccess(
         `Votre commande #${result.order.id} a été enregistrée avec succès.`
       );
+
     } catch (error) {
       console.error(
         "SUBMIT_ORDER_ERROR:",
@@ -573,6 +545,7 @@ Total : ${total.toLocaleString(
           ? error.message
           : "Une erreur est survenue lors de la commande."
       );
+
     } finally {
       setIsSubmitting(false);
     }
@@ -595,6 +568,7 @@ Total : ${total.toLocaleString(
         lg:py-16
       "
     >
+
       {/* ======================================================
           HEADER
           ====================================================== */}
@@ -662,7 +636,7 @@ Total : ${total.toLocaleString(
               text-neutral-500
             "
           >
-            {ITEMS.length}{" "}
+            {totalItems}{" "}
             {TEXT.cart.items}
           </p>
 

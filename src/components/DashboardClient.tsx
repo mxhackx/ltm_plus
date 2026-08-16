@@ -29,6 +29,8 @@ import {
   deleteOrder,
 } from "@/lib/actions/account";
 
+import { logoutUser } from "@/lib/actions/auth";
+
 import "@/app/globals.css";
 
 // ============================================================
@@ -92,6 +94,10 @@ const DASHBOARD_DATA = {
     email: "Email",
     telephone: "Téléphone",
     fallback: "Non renseigné",
+
+    logout: "Se déconnecter",
+    loggingOut: "Déconnexion...",
+
     deleteAccount: "Supprimer mon compte",
     deleteAccountDescription:
       "Cette action supprimera définitivement vos informations et vos commandes.",
@@ -246,26 +252,43 @@ function getOrderTotal(order: Order) {
 // PDF
 // ============================================================
 
-function generateQuotePDF(order: Order, user: User) {
+function generateQuotePDF(
+  order: Order,
+  user: User
+) {
   const doc = new jsPDF();
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
+  const pageWidth =
+    doc.internal.pageSize.getWidth();
+
+  const pageHeight =
+    doc.internal.pageSize.getHeight();
 
   const margin = 20;
 
-  const orderNumber = formatOrderId(order.id);
-  const quoteNumber = `DEVIS-${orderNumber}`;
-  const date = formatDate(order.date);
+  const orderNumber =
+    formatOrderId(order.id);
+
+  const quoteNumber =
+    `DEVIS-${orderNumber}`;
+
+  const date =
+    formatDate(order.date);
 
   const items = order.items;
-  const orderTotal = getOrderTotal(order);
+
+  const orderTotal =
+    getOrderTotal(order);
 
   // ==========================================================
   // HEADER
   // ==========================================================
 
-  doc.setFillColor(249, 115, 22);
+  doc.setFillColor(
+    249,
+    115,
+    22
+  );
 
   doc.rect(
     0,
@@ -276,14 +299,36 @@ function generateQuotePDF(order: Order, user: User) {
   );
 
   doc.setFontSize(24);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(30, 30, 30);
 
-  doc.text("DEVIS", margin, 28);
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    30,
+    30,
+    30
+  );
+
+  doc.text(
+    "DEVIS",
+    margin,
+    28
+  );
 
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(100, 100, 100);
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setTextColor(
+    100,
+    100,
+    100
+  );
 
   doc.text(
     quoteNumber,
@@ -308,8 +353,17 @@ function generateQuotePDF(order: Order, user: User) {
   // ==========================================================
 
   doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(30, 30, 30);
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    30,
+    30,
+    30
+  );
 
   doc.text(
     "Votre entreprise",
@@ -318,8 +372,17 @@ function generateQuotePDF(order: Order, user: User) {
   );
 
   doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(90, 90, 90);
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setTextColor(
+    90,
+    90,
+    90
+  );
 
   doc.text(
     "Équipements électriques",
@@ -343,17 +406,40 @@ function generateQuotePDF(order: Order, user: User) {
   // CLIENT
   // ==========================================================
 
-  const clientX = pageWidth / 2 + 5;
+  const clientX =
+    pageWidth / 2 + 5;
 
   doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(30, 30, 30);
 
-  doc.text("Client", clientX, 48);
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    30,
+    30,
+    30
+  );
+
+  doc.text(
+    "Client",
+    clientX,
+    48
+  );
 
   doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(90, 90, 90);
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setTextColor(
+    90,
+    90,
+    90
+  );
 
   const clientName =
     `${user.firstName} ${user.lastName}`;
@@ -384,7 +470,11 @@ function generateQuotePDF(order: Order, user: User) {
   // SEPARATION
   // ==========================================================
 
-  doc.setDrawColor(220, 220, 220);
+  doc.setDrawColor(
+    220,
+    220,
+    220
+  );
 
   doc.line(
     margin,
@@ -404,7 +494,11 @@ function generateQuotePDF(order: Order, user: User) {
   const colUnit = 137;
   const colTotal = 174;
 
-  doc.setFillColor(245, 245, 245);
+  doc.setFillColor(
+    245,
+    245,
+    245
+  );
 
   doc.rect(
     margin,
@@ -415,8 +509,17 @@ function generateQuotePDF(order: Order, user: User) {
   );
 
   doc.setFontSize(8);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(60, 60, 60);
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    60,
+    60,
+    60
+  );
 
   doc.text(
     "PRODUIT",
@@ -444,27 +547,43 @@ function generateQuotePDF(order: Order, user: User) {
 
   y += 12;
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
   doc.setFontSize(8);
-  doc.setTextColor(50, 50, 50);
+
+  doc.setTextColor(
+    50,
+    50,
+    50
+  );
 
   // ==========================================================
   // PRODUITS
   // ==========================================================
 
   items.forEach((item) => {
-    const quantity = Number(item.quantity || 1);
-    const unitPrice = Number(item.price || 0);
-    const productTotal = unitPrice * quantity;
+    const quantity =
+      Number(item.quantity || 1);
+
+    const unitPrice =
+      Number(item.price || 0);
+
+    const productTotal =
+      unitPrice * quantity;
 
     if (y > 265) {
       doc.addPage();
+
       y = 25;
     }
 
     doc.text(
       item.name ||
-        DASHBOARD_DATA.order.productWithoutName,
+        DASHBOARD_DATA.order
+          .productWithoutName,
       colProduct,
       y
     );
@@ -491,7 +610,12 @@ function generateQuotePDF(order: Order, user: User) {
 
     if (item.description) {
       doc.setFontSize(7);
-      doc.setTextColor(130, 130, 130);
+
+      doc.setTextColor(
+        130,
+        130,
+        130
+      );
 
       const description =
         doc.splitTextToSize(
@@ -505,10 +629,16 @@ function generateQuotePDF(order: Order, user: User) {
         y
       );
 
-      y += description.length * 4;
+      y +=
+        description.length * 4;
 
       doc.setFontSize(8);
-      doc.setTextColor(50, 50, 50);
+
+      doc.setTextColor(
+        50,
+        50,
+        50
+      );
     }
 
     doc.setDrawColor(
@@ -534,8 +664,17 @@ function generateQuotePDF(order: Order, user: User) {
   y += 8;
 
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(100, 100, 100);
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setTextColor(
+    100,
+    100,
+    100
+  );
 
   doc.text(
     "Sous-total",
@@ -543,8 +682,16 @@ function generateQuotePDF(order: Order, user: User) {
     y
   );
 
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(30, 30, 30);
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    30,
+    30,
+    30
+  );
 
   doc.text(
     formatPrice(orderTotal),
@@ -558,10 +705,23 @@ function generateQuotePDF(order: Order, user: User) {
   y += 10;
 
   doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(249, 115, 22);
 
-  doc.text("TOTAL", 130, y);
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    249,
+    115,
+    22
+  );
+
+  doc.text(
+    "TOTAL",
+    130,
+    y
+  );
 
   doc.text(
     formatPrice(orderTotal),
@@ -580,12 +740,22 @@ function generateQuotePDF(order: Order, user: User) {
 
   if (y > pageHeight - 40) {
     doc.addPage();
+
     y = 30;
   }
 
   doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(50, 50, 50);
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setTextColor(
+    50,
+    50,
+    50
+  );
 
   doc.text(
     "Conditions",
@@ -601,7 +771,12 @@ function generateQuotePDF(order: Order, user: User) {
   );
 
   doc.setFontSize(8);
-  doc.setTextColor(120, 120, 120);
+
+  doc.setTextColor(
+    120,
+    120,
+    120
+  );
 
   doc.text(
     "Ce devis est généré automatiquement à partir de votre commande.",
@@ -635,6 +810,7 @@ function generateQuotePDF(order: Order, user: User) {
   );
 
   doc.setFontSize(7);
+
   doc.setTextColor(
     150,
     150,
@@ -663,33 +839,48 @@ export default function DashboardClient({
   user,
   orders,
 }: DashboardClientProps) {
-  const [currentOrders, setCurrentOrders] =
-    useState<Order[]>(orders);
+  const [
+    currentOrders,
+    setCurrentOrders,
+  ] = useState<Order[]>(orders);
 
-  const [deletingOrderId, setDeletingOrderId] =
-    useState<number | null>(null);
+  const [
+    deletingOrderId,
+    setDeletingOrderId,
+  ] = useState<number | null>(null);
 
-  const [deletingAccount, setDeletingAccount] =
-    useState(false);
+  const [
+    deletingAccount,
+    setDeletingAccount,
+  ] = useState(false);
+
+  const [
+    loggingOut,
+    setLoggingOut,
+  ] = useState(false);
 
   // ==========================================================
   // STATISTIQUES
   // ==========================================================
 
   const statistics = useMemo(() => {
-    const total = currentOrders.length;
+    const total =
+      currentOrders.length;
 
     const active =
       currentOrders.filter(
         (order) =>
-          order.status !== "DELIVERED" &&
-          order.status !== "CANCELLED"
+          order.status !==
+            "DELIVERED" &&
+          order.status !==
+            "CANCELLED"
       ).length;
 
     const spent =
       currentOrders.reduce(
         (total, order) =>
-          total + getOrderTotal(order),
+          total +
+          getOrderTotal(order),
         0
       );
 
@@ -704,7 +895,9 @@ export default function DashboardClient({
   // WHATSAPP
   // ==========================================================
 
-  function handleWhatsAppOrder(order: Order) {
+  function handleWhatsAppOrder(
+    order: Order
+  ) {
     if (order.items.length === 0) {
       return;
     }
@@ -722,17 +915,22 @@ export default function DashboardClient({
       order.items
         .map((item, index) => {
           const quantity =
-            Number(item.quantity || 1);
+            Number(
+              item.quantity || 1
+            );
 
           const price =
-            Number(item.price || 0);
+            Number(
+              item.price || 0
+            );
 
           const itemTotal =
             price * quantity;
 
           return `${index + 1}. ${
             item.name ||
-            DASHBOARD_DATA.order.productWithoutName
+            DASHBOARD_DATA.order
+              .productWithoutName
           }
 Quantité : ${quantity}
 Prix unitaire : ${formatPrice(price)}
@@ -793,14 +991,18 @@ Merci.`;
     }
 
     try {
-      setDeletingOrderId(orderId);
+      setDeletingOrderId(
+        orderId
+      );
 
       await deleteOrder(orderId);
 
-      setCurrentOrders((orders) =>
-        orders.filter(
-          (order) => order.id !== orderId
-        )
+      setCurrentOrders(
+        (orders) =>
+          orders.filter(
+            (order) =>
+              order.id !== orderId
+          )
       );
     } catch (error) {
       console.error(
@@ -823,7 +1025,8 @@ Merci.`;
   async function handleDeleteAccount() {
     const confirmed =
       window.confirm(
-        DASHBOARD_DATA.profile.deleteAccountConfirm
+        DASHBOARD_DATA.profile
+          .deleteAccountConfirm
       );
 
     if (!confirmed) {
@@ -847,6 +1050,31 @@ Merci.`;
       );
 
       setDeletingAccount(false);
+    }
+  }
+
+  // ==========================================================
+  // DECONNEXION
+  // ==========================================================
+
+  async function handleLogout() {
+    try {
+      setLoggingOut(true);
+
+      await logoutUser();
+
+      window.location.href = "/";
+    } catch (error) {
+      console.error(
+        "LOGOUT_ERROR:",
+        error
+      );
+
+      window.alert(
+        "Impossible de vous déconnecter."
+      );
+
+      setLoggingOut(false);
     }
   }
 
@@ -940,7 +1168,10 @@ Merci.`;
               sm:leading-7
             "
           >
-            {DASHBOARD_DATA.page.description}
+            {
+              DASHBOARD_DATA.page
+                .description
+            }
           </p>
 
           <Link
@@ -957,7 +1188,10 @@ Merci.`;
               text-(--orange)
             "
           >
-            {DASHBOARD_DATA.page.catalog}
+            {
+              DASHBOARD_DATA.page
+                .catalog
+            }
 
             <ArrowRight
               size={16}
@@ -1027,7 +1261,10 @@ Merci.`;
                       text-(--orange)
                     "
                   >
-                    {DASHBOARD_DATA.profile.title}
+                    {
+                      DASHBOARD_DATA
+                        .profile.title
+                    }
                   </p>
 
                   <h2
@@ -1075,7 +1312,11 @@ Merci.`;
                     <UserRound size={15} />
 
                     <span className="text-xs">
-                      {DASHBOARD_DATA.profile.firstName}
+                      {
+                        DASHBOARD_DATA
+                          .profile
+                          .firstName
+                      }
                     </span>
                   </div>
 
@@ -1088,7 +1329,9 @@ Merci.`;
                     "
                   >
                     {user.firstName ||
-                      DASHBOARD_DATA.profile.fallback}
+                      DASHBOARD_DATA
+                        .profile
+                        .fallback}
                   </p>
                 </div>
 
@@ -1116,7 +1359,11 @@ Merci.`;
                     <Mail size={15} />
 
                     <span className="text-xs">
-                      {DASHBOARD_DATA.profile.email}
+                      {
+                        DASHBOARD_DATA
+                          .profile
+                          .email
+                      }
                     </span>
                   </div>
 
@@ -1129,7 +1376,9 @@ Merci.`;
                     "
                   >
                     {user.email ||
-                      DASHBOARD_DATA.profile.fallback}
+                      DASHBOARD_DATA
+                        .profile
+                        .fallback}
                   </p>
                 </div>
 
@@ -1157,7 +1406,11 @@ Merci.`;
                     <Phone size={15} />
 
                     <span className="text-xs">
-                      {DASHBOARD_DATA.profile.telephone}
+                      {
+                        DASHBOARD_DATA
+                          .profile
+                          .telephone
+                      }
                     </span>
                   </div>
 
@@ -1170,12 +1423,78 @@ Merci.`;
                     "
                   >
                     {user.telephone ||
-                      DASHBOARD_DATA.profile.fallback}
+                      DASHBOARD_DATA
+                        .profile
+                        .fallback}
                   </p>
                 </div>
               </div>
 
-              {/* SUPPRESSION COMPTE */}
+              {/* ==================================================
+                  DECONNEXION
+              ================================================== */}
+
+              <div
+                className="
+                  mt-6
+                  flex
+                  justify-end
+                "
+              >
+                <button
+                  type="button"
+                  disabled={
+                    loggingOut ||
+                    deletingAccount
+                  }
+                  onClick={
+                    handleLogout
+                  }
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-neutral-200
+                    bg-white
+                    px-4
+                    py-2.5
+                    text-xs
+                    font-semibold
+                    text-neutral-700
+                    transition
+                    hover:border-(--orange)/30
+                    hover:bg-(--orange)/5
+                    hover:text-(--orange)
+                    disabled:cursor-not-allowed
+                    disabled:opacity-50
+                    dark:border-white/10
+                    dark:bg-white/[0.03]
+                    dark:text-neutral-300
+                    dark:hover:bg-(--orange)/10
+                    dark:hover:text-(--orange)
+                  "
+                >
+                  <ArrowRight
+                    size={15}
+                    className="rotate-180"
+                  />
+
+                  {loggingOut
+                    ? DASHBOARD_DATA
+                        .profile
+                        .loggingOut
+                    : DASHBOARD_DATA
+                        .profile
+                        .logout}
+                </button>
+              </div>
+
+              {/* ==================================================
+                  SUPPRESSION COMPTE
+              ================================================== */}
 
               <div
                 className="
@@ -1217,7 +1536,9 @@ Merci.`;
                         text-red-500
                       "
                     >
-                      <AlertTriangle size={18} />
+                      <AlertTriangle
+                        size={18}
+                      />
                     </div>
 
                     <div>
@@ -1229,7 +1550,11 @@ Merci.`;
                           dark:text-red-400
                         "
                       >
-                        {DASHBOARD_DATA.profile.deleteAccount}
+                        {
+                          DASHBOARD_DATA
+                            .profile
+                            .deleteAccount
+                        }
                       </p>
 
                       <p
@@ -1243,7 +1568,8 @@ Merci.`;
                         "
                       >
                         {
-                          DASHBOARD_DATA.profile
+                          DASHBOARD_DATA
+                            .profile
                             .deleteAccountDescription
                         }
                       </p>
@@ -1252,8 +1578,13 @@ Merci.`;
 
                   <button
                     type="button"
-                    disabled={deletingAccount}
-                    onClick={handleDeleteAccount}
+                    disabled={
+                      deletingAccount ||
+                      loggingOut
+                    }
+                    onClick={
+                      handleDeleteAccount
+                    }
                     className="
                       inline-flex
                       shrink-0
@@ -1282,7 +1613,9 @@ Merci.`;
 
                     {deletingAccount
                       ? "Suppression..."
-                      : DASHBOARD_DATA.profile.deleteAccount}
+                      : DASHBOARD_DATA
+                          .profile
+                          .deleteAccount}
                   </button>
                 </div>
               </div>
@@ -1328,7 +1661,11 @@ Merci.`;
                   text-neutral-400
                 "
               >
-                {DASHBOARD_DATA.statistics.orders.label}
+                {
+                  DASHBOARD_DATA
+                    .statistics
+                    .orders.label
+                }
               </span>
 
               <div
@@ -1353,8 +1690,14 @@ Merci.`;
 
             <p className="mt-1 text-xs text-neutral-400">
               {statistics.total > 1
-                ? DASHBOARD_DATA.statistics.orders.plural
-                : DASHBOARD_DATA.statistics.orders.singular}
+                ? DASHBOARD_DATA
+                    .statistics
+                    .orders
+                    .plural
+                : DASHBOARD_DATA
+                    .statistics
+                    .orders
+                    .singular}
             </p>
           </div>
 
@@ -1381,7 +1724,11 @@ Merci.`;
                   text-neutral-400
                 "
               >
-                {DASHBOARD_DATA.statistics.active.label}
+                {
+                  DASHBOARD_DATA
+                    .statistics
+                    .active.label
+                }
               </span>
 
               <div
@@ -1406,8 +1753,14 @@ Merci.`;
 
             <p className="mt-1 text-xs text-neutral-400">
               {statistics.active > 1
-                ? DASHBOARD_DATA.statistics.active.plural
-                : DASHBOARD_DATA.statistics.active.singular}
+                ? DASHBOARD_DATA
+                    .statistics
+                    .active
+                    .plural
+                : DASHBOARD_DATA
+                    .statistics
+                    .active
+                    .singular}
             </p>
           </div>
 
@@ -1434,7 +1787,11 @@ Merci.`;
                   text-neutral-400
                 "
               >
-                {DASHBOARD_DATA.statistics.spent.label}
+                {
+                  DASHBOARD_DATA
+                    .statistics
+                    .spent.label
+                }
               </span>
 
               <div
@@ -1454,11 +1811,17 @@ Merci.`;
             </div>
 
             <p className="mt-4 text-2xl font-bold">
-              {formatPrice(statistics.spent)}
+              {formatPrice(
+                statistics.spent
+              )}
             </p>
 
             <p className="mt-1 text-xs text-neutral-400">
-              {DASHBOARD_DATA.statistics.spent.description}
+              {
+                DASHBOARD_DATA
+                  .statistics
+                  .spent.description
+              }
             </p>
           </div>
         </section>
@@ -1493,7 +1856,10 @@ Merci.`;
                     text-(--orange)
                   "
                 >
-                  {DASHBOARD_DATA.history.eyebrow}
+                  {
+                    DASHBOARD_DATA
+                      .history.eyebrow
+                  }
                 </p>
 
                 <h2
@@ -1504,506 +1870,615 @@ Merci.`;
                     sm:text-2xl
                   "
                 >
-                  {DASHBOARD_DATA.history.title}
+                  {
+                    DASHBOARD_DATA
+                      .history.title
+                  }
                 </h2>
               </div>
 
               <span className="text-xs text-neutral-400">
                 {currentOrders.length}{" "}
                 {currentOrders.length > 1
-                  ? DASHBOARD_DATA.history.orderCount.plural
-                  : DASHBOARD_DATA.history.orderCount.singular}
+                  ? DASHBOARD_DATA
+                      .history
+                      .orderCount
+                      .plural
+                  : DASHBOARD_DATA
+                      .history
+                      .orderCount
+                      .singular}
               </span>
             </div>
 
             <div className="space-y-4">
-              {currentOrders.map((order) => {
-                const status =
-                  STATUS_CONFIG[order.status];
+              {currentOrders.map(
+                (order) => {
+                  const status =
+                    STATUS_CONFIG[
+                      order.status
+                    ];
 
-                const StatusIcon =
-                  status.icon;
+                  const StatusIcon =
+                    status.icon;
 
-                const items = order.items;
+                  const items =
+                    order.items;
 
-                const orderTotal =
-                  getOrderTotal(order);
+                  const orderTotal =
+                    getOrderTotal(
+                      order
+                    );
 
-                const previewItems =
-                  items.slice(0, 3);
+                  const previewItems =
+                    items.slice(0, 3);
 
-                const remainingItems =
-                  Math.max(
-                    items.length - 3,
-                    0
-                  );
+                  const remainingItems =
+                    Math.max(
+                      items.length - 3,
+                      0
+                    );
 
-                return (
-                  <article
-                    key={order.id}
-                    className="
-                      overflow-hidden
-                      rounded-3xl
-                      border
-                      border-neutral-200
-                      bg-white
-                      transition
-                      duration-300
-                      hover:border-(--orange)/30
-                      hover:shadow-lg
-                      hover:shadow-black/5
-                      dark:border-white/10
-                      dark:bg-white/[0.025]
-                    "
-                  >
-                    {/* HEADER */}
-
-                    <div
+                  return (
+                    <article
+                      key={order.id}
                       className="
-                        flex
-                        flex-col
-                        gap-4
-                        border-b
-                        border-neutral-100
-                        p-5
+                        overflow-hidden
+                        rounded-3xl
+                        border
+                        border-neutral-200
+                        bg-white
+                        transition
+                        duration-300
+                        hover:border-(--orange)/30
+                        hover:shadow-lg
+                        hover:shadow-black/5
                         dark:border-white/10
-                        sm:flex-row
-                        sm:items-center
-                        sm:justify-between
-                        sm:px-6
+                        dark:bg-white/[0.025]
                       "
                     >
-                      <div>
-                        <div
-                          className="
-                            flex
-                            flex-wrap
-                            items-center
-                            gap-3
-                          "
-                        >
-                          <h3
-                            className="
-                              text-sm
-                              font-bold
-                            "
-                          >
-                            #{formatOrderId(order.id)}
-                          </h3>
-
-                          <span
-                            className={`
-                              inline-flex
-                              items-center
-                              gap-1.5
-                              rounded-full
-                              px-2.5
-                              py-1
-                              text-[10px]
-                              font-semibold
-                              ${status.className}
-                            `}
-                          >
-                            <StatusIcon size={12} />
-
-                            {status.label}
-                          </span>
-                        </div>
-
-                        <div
-                          className="
-                            mt-2
-                            flex
-                            items-center
-                            gap-2
-                            text-xs
-                            text-neutral-400
-                          "
-                        >
-                          <CalendarDays size={13} />
-
-                          {formatDate(order.date)}
-                        </div>
-                      </div>
-
-                      <div className="sm:text-right">
-                        <p
-                          className="
-                            text-[10px]
-                            uppercase
-                            tracking-[0.15em]
-                            text-neutral-400
-                          "
-                        >
-                          {DASHBOARD_DATA.order.total}
-                        </p>
-
-                        <p
-                          className="
-                            mt-1
-                            text-xl
-                            font-bold
-                            text-(--orange)
-                          "
-                        >
-                          {formatPrice(orderTotal)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* PRODUITS */}
-
-                    <div className="p-5 sm:p-6">
-                      {items.length === 0 ? (
-                        <div
-                          className="
-                            rounded-2xl
-                            border
-                            border-dashed
-                            border-neutral-200
-                            p-6
-                            text-center
-                            text-sm
-                            text-neutral-400
-                            dark:border-white/10
-                          "
-                        >
-                          {DASHBOARD_DATA.order.noItems}
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          {previewItems.map((item) => {
-                            const quantity =
-                              Number(
-                                item.quantity || 1
-                              );
-
-                            const price =
-                              Number(
-                                item.price || 0
-                              );
-
-                            return (
-                              <div
-                                key={item.id}
-                                className="
-                                  flex
-                                  items-center
-                                  gap-3
-                                  rounded-2xl
-                                  border
-                                  border-neutral-200
-                                  bg-neutral-50
-                                  p-3
-                                  dark:border-white/10
-                                  dark:bg-white/[0.025]
-                                "
-                              >
-                                <div
-                                  className="
-                                    flex
-                                    h-14
-                                    w-14
-                                    shrink-0
-                                    items-center
-                                    justify-center
-                                    rounded-xl
-                                    bg-(--orange)/10
-                                    text-(--orange)
-                                  "
-                                >
-                                  <Package size={22} />
-                                </div>
-
-                                <div
-                                  className="
-                                    min-w-0
-                                    flex-1
-                                  "
-                                >
-                                  <p
-                                    className="
-                                      truncate
-                                      text-sm
-                                      font-semibold
-                                    "
-                                  >
-                                    {item.name ||
-                                      DASHBOARD_DATA.order.productWithoutName}
-                                  </p>
-
-                                  <p
-                                    className="
-                                      mt-1
-                                      truncate
-                                      text-xs
-                                      text-neutral-400
-                                    "
-                                  >
-                                    {item.category ||
-                                      DASHBOARD_DATA.order.product}
-
-                                    {" · "}
-
-                                    ×{quantity}
-                                  </p>
-
-                                  {item.dimensions && (
-                                    <p
-                                      className="
-                                        mt-1
-                                        truncate
-                                        text-[11px]
-                                        text-neutral-400
-                                      "
-                                    >
-                                      {item.dimensions}
-                                    </p>
-                                  )}
-                                </div>
-
-                                <p
-                                  className="
-                                    shrink-0
-                                    text-sm
-                                    font-bold
-                                    text-(--orange)
-                                  "
-                                >
-                                  {formatPrice(
-                                    price * quantity
-                                  )}
-                                </p>
-                              </div>
-                            );
-                          })}
-
-                          {remainingItems > 0 && (
-                            <p
-                              className="
-                                px-1
-                                text-xs
-                                text-neutral-400
-                              "
-                            >
-                              + {remainingItems}{" "}
-                              {remainingItems > 1
-                                ? DASHBOARD_DATA.order.previewMorePlural
-                                : DASHBOARD_DATA.order.previewMore}
-                            </p>
-                          )}
-                        </div>
-                      )}
-
-                      {/* FOOTER */}
+                      {/* HEADER */}
 
                       <div
                         className="
-                          mt-5
                           flex
                           flex-col
-                          gap-3
-                          border-t
+                          gap-4
+                          border-b
                           border-neutral-100
-                          pt-5
+                          p-5
                           dark:border-white/10
                           sm:flex-row
                           sm:items-center
                           sm:justify-between
+                          sm:px-6
                         "
                       >
                         <div>
-                          <p
+                          <div
                             className="
+                              flex
+                              flex-wrap
+                              items-center
+                              gap-3
+                            "
+                          >
+                            <h3
+                              className="
+                                text-sm
+                                font-bold
+                              "
+                            >
+                              #
+                              {formatOrderId(
+                                order.id
+                              )}
+                            </h3>
+
+                            <span
+                              className={`
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                rounded-full
+                                px-2.5
+                                py-1
+                                text-[10px]
+                                font-semibold
+                                ${status.className}
+                              `}
+                            >
+                              <StatusIcon
+                                size={12}
+                              />
+
+                              {
+                                status.label
+                              }
+                            </span>
+                          </div>
+
+                          <div
+                            className="
+                              mt-2
+                              flex
+                              items-center
+                              gap-2
                               text-xs
                               text-neutral-400
                             "
                           >
-                            {items.length}{" "}
-                            {items.length > 1
-                              ? DASHBOARD_DATA.order.article.plural
-                              : DASHBOARD_DATA.order.article.singular}
+                            <CalendarDays
+                              size={13}
+                            />
+
+                            {formatDate(
+                              order.date
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="sm:text-right">
+                          <p
+                            className="
+                              text-[10px]
+                              uppercase
+                              tracking-[0.15em]
+                              text-neutral-400
+                            "
+                          >
+                            {
+                              DASHBOARD_DATA
+                                .order
+                                .total
+                            }
                           </p>
 
                           <p
                             className="
                               mt-1
-                              text-sm
+                              text-xl
                               font-bold
+                              text-(--orange)
                             "
                           >
-                            {formatPrice(orderTotal)}
+                            {formatPrice(
+                              orderTotal
+                            )}
                           </p>
                         </div>
+                      </div>
 
-                        {/* ACTIONS */}
+                      {/* PRODUITS */}
+
+                      <div className="p-5 sm:p-6">
+                        {items.length ===
+                        0 ? (
+                          <div
+                            className="
+                              rounded-2xl
+                              border
+                              border-dashed
+                              border-neutral-200
+                              p-6
+                              text-center
+                              text-sm
+                              text-neutral-400
+                              dark:border-white/10
+                            "
+                          >
+                            {
+                              DASHBOARD_DATA
+                                .order
+                                .noItems
+                            }
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {previewItems.map(
+                              (item) => {
+                                const quantity =
+                                  Number(
+                                    item.quantity ||
+                                      1
+                                  );
+
+                                const price =
+                                  Number(
+                                    item.price ||
+                                      0
+                                  );
+
+                                return (
+                                  <div
+                                    key={
+                                      item.id
+                                    }
+                                    className="
+                                      flex
+                                      items-center
+                                      gap-3
+                                      rounded-2xl
+                                      border
+                                      border-neutral-200
+                                      bg-neutral-50
+                                      p-3
+                                      dark:border-white/10
+                                      dark:bg-white/[0.025]
+                                    "
+                                  >
+                                    <div
+                                      className="
+                                        flex
+                                        h-14
+                                        w-14
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-xl
+                                        bg-(--orange)/10
+                                        text-(--orange)
+                                      "
+                                    >
+                                      <Package
+                                        size={
+                                          22
+                                        }
+                                      />
+                                    </div>
+
+                                    <div
+                                      className="
+                                        min-w-0
+                                        flex-1
+                                      "
+                                    >
+                                      <p
+                                        className="
+                                          truncate
+                                          text-sm
+                                          font-semibold
+                                        "
+                                      >
+                                        {item.name ||
+                                          DASHBOARD_DATA
+                                            .order
+                                            .productWithoutName}
+                                      </p>
+
+                                      <p
+                                        className="
+                                          mt-1
+                                          truncate
+                                          text-xs
+                                          text-neutral-400
+                                        "
+                                      >
+                                        {item.category ||
+                                          DASHBOARD_DATA
+                                            .order
+                                            .product}
+
+                                        {" · "}
+
+                                        ×
+                                        {
+                                          quantity
+                                        }
+                                      </p>
+
+                                      {item.dimensions && (
+                                        <p
+                                          className="
+                                            mt-1
+                                            truncate
+                                            text-[11px]
+                                            text-neutral-400
+                                          "
+                                        >
+                                          {
+                                            item.dimensions
+                                          }
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    <p
+                                      className="
+                                        shrink-0
+                                        text-sm
+                                        font-bold
+                                        text-(--orange)
+                                      "
+                                    >
+                                      {formatPrice(
+                                        price *
+                                          quantity
+                                      )}
+                                    </p>
+                                  </div>
+                                );
+                              }
+                            )}
+
+                            {remainingItems >
+                              0 && (
+                              <p
+                                className="
+                                  px-1
+                                  text-xs
+                                  text-neutral-400
+                                "
+                              >
+                                +{" "}
+                                {
+                                  remainingItems
+                                }{" "}
+                                {remainingItems >
+                                1
+                                  ? DASHBOARD_DATA
+                                      .order
+                                      .previewMorePlural
+                                  : DASHBOARD_DATA
+                                      .order
+                                      .previewMore}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* FOOTER */}
 
                         <div
                           className="
+                            mt-5
                             flex
-                            flex-wrap
-                            items-center
-                            gap-2
+                            flex-col
+                            gap-3
+                            border-t
+                            border-neutral-100
+                            pt-5
+                            dark:border-white/10
+                            sm:flex-row
+                            sm:items-center
+                            sm:justify-between
                           "
                         >
-                          {/* WHATSAPP */}
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleWhatsAppOrder(
-                                order
-                              )
-                            }
-                            disabled={
-                              items.length === 0
-                            }
-                            className="
-                              inline-flex
-                              items-center
-                              justify-center
-                              gap-2
-                              rounded-xl
-                              bg-green-600
-                              px-4
-                              py-2.5
-                              text-xs
-                              font-semibold
-                              text-white
-                              transition
-                              hover:bg-green-700
-                              disabled:cursor-not-allowed
-                              disabled:opacity-40
-                            "
-                          >
-                            <MessageCircle size={15} />
-
-                            {DASHBOARD_DATA.order.whatsapp}
-                          </button>
-
-                          {/* PDF */}
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              generateQuotePDF(
-                                order,
-                                user
-                              )
-                            }
-                            className="
-                              inline-flex
-                              items-center
-                              justify-center
-                              gap-2
-                              rounded-xl
-                              border
-                              border-neutral-200
-                              bg-white
-                              px-4
-                              py-2.5
-                              text-xs
-                              font-semibold
-                              text-neutral-700
-                              transition
-                              hover:border-(--orange)/30
-                              hover:bg-(--orange)/5
-                              hover:text-(--orange)
-                              dark:border-white/10
-                              dark:bg-white/[0.03]
-                              dark:text-neutral-300
-                              dark:hover:bg-(--orange)/10
-                              dark:hover:text-(--orange)
-                            "
-                          >
-                            <FileText size={15} />
-
-                            {DASHBOARD_DATA.order.quote}
-
-                            <Download size={13} />
-                          </button>
-
-                          {/* DELETE */}
-
-                          <button
-                            type="button"
-                            disabled={
-                              deletingOrderId ===
-                              order.id
-                            }
-                            onClick={() =>
-                              handleDeleteOrder(
-                                order.id
-                              )
-                            }
-                            className="
-                              inline-flex
-                              items-center
-                              justify-center
-                              gap-2
-                              rounded-xl
-                              border
-                              border-red-200
-                              bg-red-50
-                              px-4
-                              py-2.5
-                              text-xs
-                              font-semibold
-                              text-red-500
-                              transition
-                              hover:bg-red-100
-                              disabled:cursor-not-allowed
-                              disabled:opacity-50
-                              dark:border-red-500/20
-                              dark:bg-red-500/5
-                              dark:hover:bg-red-500/10
-                            "
-                          >
-                            <Trash2 size={15} />
-
-                            {deletingOrderId ===
-                            order.id
-                              ? "Suppression..."
-                              : DASHBOARD_DATA.order.delete}
-                          </button>
-
-                          {/* DETAILS */}
-
-                          <Link
-                            href={`/dashboard/orders/${order.id}`}
-                            className="
-                              group/link
-                              inline-flex
-                              items-center
-                              justify-center
-                              gap-2
-                              rounded-xl
-                              bg-(--orange)
-                              px-4
-                              py-2.5
-                              text-xs
-                              font-semibold
-                              text-white
-                              transition
-                              hover:brightness-110
-                            "
-                          >
-                            {DASHBOARD_DATA.order.details}
-
-                            <ChevronRight
-                              size={15}
+                          <div>
+                            <p
                               className="
-                                transition-transform
-                                group-hover/link:translate-x-0.5
+                                text-xs
+                                text-neutral-400
                               "
-                            />
-                          </Link>
+                            >
+                              {items.length}{" "}
+                              {items.length >
+                              1
+                                ? DASHBOARD_DATA
+                                    .order
+                                    .article
+                                    .plural
+                                : DASHBOARD_DATA
+                                    .order
+                                    .article
+                                    .singular}
+                            </p>
+
+                            <p
+                              className="
+                                mt-1
+                                text-sm
+                                font-bold
+                              "
+                            >
+                              {formatPrice(
+                                orderTotal
+                              )}
+                            </p>
+                          </div>
+
+                          {/* ACTIONS */}
+
+                          <div
+                            className="
+                              flex
+                              flex-wrap
+                              items-center
+                              gap-2
+                            "
+                          >
+                            {/* WHATSAPP */}
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleWhatsAppOrder(
+                                  order
+                                )
+                              }
+                              disabled={
+                                items.length ===
+                                0
+                              }
+                              className="
+                                inline-flex
+                                items-center
+                                justify-center
+                                gap-2
+                                rounded-xl
+                                bg-green-600
+                                px-4
+                                py-2.5
+                                text-xs
+                                font-semibold
+                                text-white
+                                transition
+                                hover:bg-green-700
+                                disabled:cursor-not-allowed
+                                disabled:opacity-40
+                              "
+                            >
+                              <MessageCircle
+                                size={
+                                  15
+                                }
+                              />
+
+                              {
+                                DASHBOARD_DATA
+                                  .order
+                                  .whatsapp
+                              }
+                            </button>
+
+                            {/* PDF */}
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                generateQuotePDF(
+                                  order,
+                                  user
+                                )
+                              }
+                              className="
+                                inline-flex
+                                items-center
+                                justify-center
+                                gap-2
+                                rounded-xl
+                                border
+                                border-neutral-200
+                                bg-white
+                                px-4
+                                py-2.5
+                                text-xs
+                                font-semibold
+                                text-neutral-700
+                                transition
+                                hover:border-(--orange)/30
+                                hover:bg-(--orange)/5
+                                hover:text-(--orange)
+                                dark:border-white/10
+                                dark:bg-white/[0.03]
+                                dark:text-neutral-300
+                                dark:hover:bg-(--orange)/10
+                                dark:hover:text-(--orange)
+                              "
+                            >
+                              <FileText
+                                size={
+                                  15
+                                }
+                              />
+
+                              {
+                                DASHBOARD_DATA
+                                  .order
+                                  .quote
+                              }
+
+                              <Download
+                                size={
+                                  13
+                                }
+                              />
+                            </button>
+
+                            {/* DELETE */}
+
+                            <button
+                              type="button"
+                              disabled={
+                                deletingOrderId ===
+                                order.id
+                              }
+                              onClick={() =>
+                                handleDeleteOrder(
+                                  order.id
+                                )
+                              }
+                              className="
+                                inline-flex
+                                items-center
+                                justify-center
+                                gap-2
+                                rounded-xl
+                                border
+                                border-red-200
+                                bg-red-50
+                                px-4
+                                py-2.5
+                                text-xs
+                                font-semibold
+                                text-red-500
+                                transition
+                                hover:bg-red-100
+                                disabled:cursor-not-allowed
+                                disabled:opacity-50
+                                dark:border-red-500/20
+                                dark:bg-red-500/5
+                                dark:hover:bg-red-500/10
+                              "
+                            >
+                              <Trash2
+                                size={
+                                  15
+                                }
+                              />
+
+                              {deletingOrderId ===
+                              order.id
+                                ? "Suppression..."
+                                : DASHBOARD_DATA
+                                    .order
+                                    .delete}
+                            </button>
+
+                            {/* DETAILS */}
+
+                            <Link
+                              href={`/dashboard/orders/${order.id}`}
+                              className="
+                                group/link
+                                inline-flex
+                                items-center
+                                justify-center
+                                gap-2
+                                rounded-xl
+                                bg-(--orange)
+                                px-4
+                                py-2.5
+                                text-xs
+                                font-semibold
+                                text-white
+                                transition
+                                hover:brightness-110
+                              "
+                            >
+                              {
+                                DASHBOARD_DATA
+                                  .order
+                                  .details
+                              }
+
+                              <ChevronRight
+                                size={
+                                  15
+                                }
+                                className="
+                                  transition-transform
+                                  group-hover/link:translate-x-0.5
+                                "
+                              />
+                            </Link>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </article>
-                );
-              })}
+                    </article>
+                  );
+                }
+              )}
             </div>
           </section>
         )}
@@ -2012,7 +2487,8 @@ Merci.`;
             AUCUNE COMMANDE
         ================================================== */}
 
-        {currentOrders.length === 0 && (
+        {currentOrders.length ===
+          0 && (
           <section
             className="
               mx-auto
@@ -2047,7 +2523,9 @@ Merci.`;
                   text-(--orange)
                 "
               >
-                <ShoppingBag size={28} />
+                <ShoppingBag
+                  size={28}
+                />
               </div>
 
               <h2
@@ -2057,7 +2535,11 @@ Merci.`;
                   font-bold
                 "
               >
-                {DASHBOARD_DATA.order.empty.title}
+                {
+                  DASHBOARD_DATA
+                    .order
+                    .empty.title
+                }
               </h2>
 
               <p
@@ -2071,7 +2553,12 @@ Merci.`;
                   dark:text-neutral-400
                 "
               >
-                {DASHBOARD_DATA.order.empty.description}
+                {
+                  DASHBOARD_DATA
+                    .order
+                    .empty
+                    .description
+                }
               </p>
 
               <Link
@@ -2092,9 +2579,15 @@ Merci.`;
                   hover:brightness-110
                 "
               >
-                {DASHBOARD_DATA.order.empty.action}
+                {
+                  DASHBOARD_DATA
+                    .order
+                    .empty.action
+                }
 
-                <ArrowRight size={16} />
+                <ArrowRight
+                  size={16}
+                />
               </Link>
             </div>
           </section>
