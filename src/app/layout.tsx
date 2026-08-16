@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ltm-plus.vercel.app"),
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.jpg",
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "LTM+ Industries",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: "LTM+ Industries | Tubes électriques au Bénin",
     description:
       "Découvrez les tubes électriques orange et les solutions proposées par LTM+ Industries au Bénin.",
-    images: ["/logo.jpg"],
+    images: ["/logo.png"],
   },
 
   robots: {
@@ -51,13 +51,34 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
 };
-export default function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "LTM+ Industries",
+  url: "https://ltm-plus.vercel.app",
+  logo: "https://ltm-plus.vercel.app/logo.png",
+  description:
+    "LTM+ Industries est spécialisée dans la production et la vente de tubes électriques orange au Bénin.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html>
+    <html lang="fr">
       <head>
-        <title>LTM+ Industries</title>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd),
+          }}
+        />
       </head>
-      {children}
+
+      <body>{children}</body>
     </html>
   );
 }
