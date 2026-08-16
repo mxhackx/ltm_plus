@@ -9,7 +9,7 @@ type RouteContext = {
 };
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: RouteContext
 ) {
   try {
@@ -38,7 +38,10 @@ export async function GET(
 
     const orderId = Number(id);
 
-    if (!Number.isInteger(orderId) || orderId <= 0) {
+    if (
+      !Number.isInteger(orderId) ||
+      orderId <= 0
+    ) {
       return NextResponse.json(
         {
           error: "Identifiant de commande invalide",
@@ -57,9 +60,8 @@ export async function GET(
       where: {
         id: orderId,
 
-        // IMPORTANT :
-        // l'utilisateur ne peut récupérer
-        // que SES propres commandes.
+        // L'utilisateur ne peut récupérer
+        // que ses propres commandes.
         userId: user.id,
       },
 

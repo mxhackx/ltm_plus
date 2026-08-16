@@ -16,6 +16,13 @@ import {
 export default async function AdminsPage() {
   const admins = await getAdmins();
 
+  // ==========================================================
+  // SUPPRESSION ADMIN
+  // ==========================================================
+  async function handleDeleteAdmin(formData: FormData) {
+    await deleteAdmin(formData);
+  }
+
   return (
     <main
       className="
@@ -366,9 +373,7 @@ export default async function AdminsPage() {
                             text-neutral-400
                           "
                         >
-                          <CalendarDays
-                            size={13}
-                          />
+                          <CalendarDays size={13} />
 
                           <span>
                             Créé le{" "}
@@ -382,9 +387,7 @@ export default async function AdminsPage() {
 
                     {/* SUPPRESSION */}
 
-                    <form
-                      action={deleteAdmin}
-                    >
+                    <form action={handleDeleteAdmin}>
                       <input
                         type="hidden"
                         name="adminId"
@@ -437,12 +440,9 @@ export default async function AdminsPage() {
 // ============================================================
 
 function formatDate(date: Date) {
-  return new Intl.DateTimeFormat(
-    "fr-FR",
-    {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    }
-  ).format(date);
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
 }

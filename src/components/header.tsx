@@ -158,7 +158,7 @@ function getDarkStorage(): boolean | undefined {
   return value === "true";
 }
 
-function applyDarkMode(dark: boolean) {
+function applyDarkMode(dark: boolean): boolean {
   if (dark) {
     document.documentElement.classList.add("dark");
   } else {
@@ -270,26 +270,30 @@ export default function Header() {
   // ETATS
   // ====================================================
 
-  const [dark, setDark] = useState(
+  // IMPORTANT :
+  // Le type boolean est explicite.
+  // Sans cela, TypeScript peut inférer "true"
+  // à cause du "as const" de HEADER_DATA.
+  const [dark, setDark] = useState<boolean>(
     HEADER_DATA.theme.defaultDark
   );
 
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState<boolean>(false);
 
   const [user, setUser] =
     useState<User | null>(null);
 
   const [loadingUser, setLoadingUser] =
-    useState(true);
+    useState<boolean>(true);
 
   const [showLogin, setShowLogin] =
-    useState(false);
+    useState<boolean>(false);
 
   const [showRegister, setShowRegister] =
-    useState(false);
+    useState<boolean>(false);
 
   const [loggingOut, setLoggingOut] =
-    useState(false);
+    useState<boolean>(false);
 
   // ====================================================
   // INITIALISATION
@@ -300,13 +304,13 @@ export default function Header() {
     // THEME
     // ----------------------------------------------
 
-    const storedTheme =
-      getDarkStorage();
+    const storedTheme = getDarkStorage();
 
     if (storedTheme !== undefined) {
-      setDark(
-        applyDarkMode(storedTheme)
-      );
+      const appliedTheme =
+        applyDarkMode(storedTheme);
+
+      setDark(appliedTheme);
     } else {
       applyDarkMode(
         HEADER_DATA.theme.defaultDark
@@ -453,14 +457,10 @@ export default function Header() {
     setLoggingOut(true);
 
     try {
-      const result =
-        await logoutUser();
+      const result = await logoutUser();
 
       if (!result.success) {
-        console.error(
-          result.error
-        );
-
+        console.error(result.error);
         return;
       }
 
@@ -576,9 +576,7 @@ export default function Header() {
                   <button
                     key={href}
                     type="button"
-                    onClick={
-                      handleDashboard
-                    }
+                    onClick={handleDashboard}
                     className={`
                       transition
                       hover:text-(--orange)
@@ -706,12 +704,9 @@ export default function Header() {
               />
             </div>
           ) : user ? (
-
             <button
               type="button"
-              onClick={
-                handleDashboard
-              }
+              onClick={handleDashboard}
               title={user.email}
               className="
                 flex
@@ -758,9 +753,7 @@ export default function Header() {
                 {user.firstName}
               </span>
             </button>
-
           ) : (
-
             <div
               className="
                 hidden
@@ -786,10 +779,7 @@ export default function Header() {
                   dark:hover:bg-white/10
                 "
               >
-                {
-                  HEADER_DATA.actions.login
-                    .label
-                }
+                {HEADER_DATA.actions.login.label}
               </button>
 
               {/* CRÉER UN COMPTE */}
@@ -810,10 +800,7 @@ export default function Header() {
                   hover:brightness-110
                 "
               >
-                {
-                  HEADER_DATA.actions.register
-                    .label
-                }
+                {HEADER_DATA.actions.register.label}
               </button>
             </div>
           )}
@@ -828,9 +815,7 @@ export default function Header() {
                 : HEADER_DATA.actions.menu.open
             }
             aria-expanded={menu}
-            onClick={() =>
-              setMenu(true)
-            }
+            onClick={() => setMenu(true)}
             className="
               rounded-full
               p-2
@@ -851,9 +836,7 @@ export default function Header() {
       ================================================= */}
 
       <div
-        onClick={() =>
-          setMenu(false)
-        }
+        onClick={() => setMenu(false)}
         className={`
           fixed
           inset-0
@@ -943,8 +926,7 @@ export default function Header() {
                 setMenu(false);
 
                 router.push(
-                  HEADER_DATA.actions
-                    .dashboard.href
+                  HEADER_DATA.actions.dashboard.href
                 );
               }}
               className="
@@ -972,12 +954,7 @@ export default function Header() {
               </div>
 
               <div className="text-left">
-                <p
-                  className="
-                    text-sm
-                    font-semibold
-                  "
-                >
+                <p className="text-sm font-semibold">
                   {user.firstName}
                 </p>
 
@@ -1017,9 +994,7 @@ export default function Header() {
 
           <button
             type="button"
-            onClick={() =>
-              setMenu(false)
-            }
+            onClick={() => setMenu(false)}
             aria-label={
               HEADER_DATA.actions.menu.close
             }
@@ -1066,9 +1041,7 @@ export default function Header() {
                   <button
                     key={href}
                     type="button"
-                    onClick={
-                      handleDashboard
-                    }
+                    onClick={handleDashboard}
                     className={`
                       flex
                       w-full
@@ -1105,9 +1078,7 @@ export default function Header() {
                 <Link
                   key={href}
                   href={href}
-                  onClick={() =>
-                    setMenu(false)
-                  }
+                  onClick={() => setMenu(false)}
                   className={`
                     flex
                     items-center
@@ -1246,19 +1217,12 @@ export default function Header() {
             CONTACT
         ================================================= */}
 
-        <div
-          className="
-            relative
-            mt-5
-          "
-        >
+        <div className="relative mt-5">
           <Link
             href={
               HEADER_DATA.mobileMenu.contact.href
             }
-            onClick={() =>
-              setMenu(false)
-            }
+            onClick={() => setMenu(false)}
             className="
               flex
               items-center
@@ -1275,8 +1239,7 @@ export default function Header() {
             "
           >
             {
-              HEADER_DATA.mobileMenu.contact
-                .label
+              HEADER_DATA.mobileMenu.contact.label
             }
           </Link>
         </div>
@@ -1288,15 +1251,9 @@ export default function Header() {
 
       {showLogin && (
         <LoginForm
-          onClose={() =>
-            setShowLogin(false)
-          }
-          onLoggedIn={
-            handleLoggedIn
-          }
-          onRegister={
-            handleRegister
-          }
+          onClose={() => setShowLogin(false)}
+          onLoggedIn={handleLoggedIn}
+          onRegister={handleRegister}
         />
       )}
 
@@ -1309,9 +1266,7 @@ export default function Header() {
           onClose={() =>
             setShowRegister(false)
           }
-          onRegistered={
-            handleRegistered
-          }
+          onRegistered={handleRegistered}
           onLogin={() => {
             setShowRegister(false);
             setShowLogin(true);

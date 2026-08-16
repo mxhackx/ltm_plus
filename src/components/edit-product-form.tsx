@@ -139,64 +139,66 @@ export default function EditProductForm({
   // SUBMIT
   // ============================================================
 
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
+  // ============================================================
+// SUBMIT
+// ============================================================
 
-    setLoading(true);
+async function handleSubmit(
+  event: React.FormEvent<HTMLFormElement>
+) {
+  event.preventDefault();
 
-    try {
-      const formData = new FormData();
+  setLoading(true);
 
-      formData.append("name", name);
-      formData.append("price", price);
-      formData.append("wasPrice", wasPrice);
-      formData.append("dimensions", dimensions);
-      formData.append("category", category);
-      formData.append("description", description);
+  try {
+    const formData = new FormData();
 
-      if (selectedImage) {
-        formData.append(
-          "image",
-          selectedImage
-        );
-      }
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("wasPrice", wasPrice);
+    formData.append("dimensions", dimensions);
+    formData.append("category", category);
+    formData.append("description", description);
 
-      const result = await updateProduct(
-        product.id,
-        formData
-      );
-
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-
-      if (result.imageUrl) {
-        setImageUrl(result.imageUrl);
-        setPreviewUrl(result.imageUrl);
-      }
-
-      setSelectedImage(null);
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-      alert("Produit mis à jour.");
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Une erreur est survenue."
-      );
-    } finally {
-      setLoading(false);
+    if (selectedImage) {
+      formData.append("image", selectedImage);
     }
-  }
 
+    const result = await updateProduct(
+      product.id,
+      formData
+    );
+
+    if (!result.success) {
+      throw new Error(
+        "Impossible de mettre à jour le produit."
+      );
+    }
+
+    if (result.imageUrl) {
+      setImageUrl(result.imageUrl);
+      setPreviewUrl(result.imageUrl);
+    }
+
+    setSelectedImage(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    alert("Produit mis à jour.");
+  } catch (error) {
+    console.error("UPDATE_PRODUCT_ERROR:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Une erreur est survenue."
+    );
+  } finally {
+    setLoading(false);
+  }
+}
   return (
     <form
       onSubmit={handleSubmit}
