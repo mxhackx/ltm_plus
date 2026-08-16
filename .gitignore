@@ -16,6 +16,3 @@ pnpm-debug.log*
 .vercel/
 .vscode/
 /src/generated/prisma
-
-/src/generated/prisma
-/prisma/migrations/
