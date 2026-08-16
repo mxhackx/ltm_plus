@@ -2,17 +2,12 @@
   "/(client)/about/page": "app/(client)/about/page.js",
   "/(client)/catalog/page": "app/(client)/catalog/page.js",
   "/(client)/contact/page": "app/(client)/contact/page.js",
+  "/(client)/dashboard/orders/[id]/page": "app/(client)/dashboard/orders/[id]/page.js",
   "/(client)/dashboard/page": "app/(client)/dashboard/page.js",
   "/(client)/page": "app/(client)/page.js",
   "/(client)/panier/page": "app/(client)/panier/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/about/page": "app/about/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/api/contact/route": "app/api/contact/route.js",
-  "/catalog/page": "app/catalog/page.js",
-  "/contact/page": "app/contact/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/page": "app/page.js",
-  "/panier/page": "app/panier/page.js"
+  "/api/orders/[id]/route": "app/api/orders/[id]/route.js",
+  "/api/orders/route": "app/api/orders/route.js",
+  "/api/products/route": "app/api/products/route.js"
 }

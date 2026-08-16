@@ -5,47 +5,77 @@ import { ArrowRight, ShoppingCart, Tag } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface CatalogCardProps {
+  id: number;
   img: string | StaticImageData;
-  price: number;
+
+  name: string;
   description: string;
-  barprice?: number;
+  category: string;
+  dimension: string;
+
+  price: number;
+  wasPrice: number | null;
+
   devise?: string;
   width?: number;
+
   onOrder?: () => void;
   onCommand?: () => void;
-  text: string;
+
+  text?: string;
 }
 
 export default function CatalogCard({
+  id,
   img,
-  price,
+  name,
   description,
-  barprice,
-  devise = "FCFA",
+  category,
+  dimension,
+  price,
+  wasPrice,
+  devise = "F CFA",
   width = 180,
   onOrder,
   onCommand,
   text = "Commander",
 }: CatalogCardProps) {
-  const hasDiscount =
-    barprice !== undefined && barprice > price;
+  // ==========================================================
+  // PROMOTION
+  // ==========================================================
 
-  const discountPercentage = hasDiscount
-    ? Math.round(
-        ((barprice - price) / barprice) * 100
-      )
-    : 0;
+  const hasDiscount =
+    wasPrice !== null &&
+    wasPrice > price;
+
+  const discountPercentage =
+    hasDiscount
+      ? Math.round(
+          ((wasPrice - price) / wasPrice) *
+            100
+        )
+      : 0;
+
+  // ==========================================================
+  // COMMANDE
+  // ==========================================================
 
   const handleCommand = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.stopPropagation();
+
     onCommand?.();
   };
+
+  // ==========================================================
+  // RENDU
+  // ==========================================================
 
   return (
     <article
       onClick={onOrder}
+      data-product-id={id}
       className="
         group
         relative
@@ -154,7 +184,7 @@ export default function CatalogCard({
 
         <Image
           src={img}
-          alt={description}
+          alt={name}
           width={width}
           height={width}
           sizes="(max-width: 640px) 70vw, 240px"
@@ -175,7 +205,6 @@ export default function CatalogCard({
 
       </div>
 
-
       {/* =====================================================
           CONTENT
       ===================================================== */}
@@ -190,7 +219,26 @@ export default function CatalogCard({
         "
       >
 
-        {/* DESCRIPTION */}
+        {/* CATEGORY */}
+
+        <span
+          className="
+            w-fit
+            rounded-full
+            bg-(--orange)/10
+            px-2.5
+            py-1
+            text-[10px]
+            font-semibold
+            uppercase
+            tracking-wide
+            text-(--orange)
+          "
+        >
+          {category}
+        </span>
+
+        {/* NAME */}
 
         <div className="min-h-[48px]">
 
@@ -207,17 +255,70 @@ export default function CatalogCard({
               sm:text-lg
             "
           >
-            {description}
+            {name}
           </h3>
+
+          <p
+            className="
+              mt-1
+              line-clamp-2
+              text-xs
+              leading-5
+              text-neutral-500
+              dark:text-neutral-400
+            "
+          >
+            {description}
+          </p>
 
         </div>
 
+        {/* DIMENSION */}
 
-        {/* PRIX */}
+        <div
+          className="
+            rounded-xl
+            bg-neutral-50
+            px-3
+            py-2
+            dark:bg-white/[0.04]
+          "
+        >
+          <p
+            className="
+              text-[10px]
+              font-medium
+              uppercase
+              tracking-wide
+              text-neutral-400
+              dark:text-neutral-500
+            "
+          >
+            Dimension
+          </p>
+
+          <p
+            className="
+              mt-0.5
+              text-xs
+              font-semibold
+              text-neutral-700
+              dark:text-neutral-200
+            "
+          >
+            {dimension}
+          </p>
+        </div>
+
+        {/* =================================================
+            PRIX
+        ================================================= */}
 
         <div className="flex items-end justify-between gap-3">
 
           <div className="flex flex-col">
+
+            {/* ANCIEN PRIX */}
 
             {hasDiscount && (
               <span
@@ -228,10 +329,14 @@ export default function CatalogCard({
                   dark:text-neutral-500
                 "
               >
-                {barprice.toLocaleString("fr-FR")}{" "}
+                {wasPrice.toLocaleString(
+                  "fr-FR"
+                )}{" "}
                 {devise}
               </span>
             )}
+
+            {/* PRIX ACTUEL */}
 
             <div className="flex items-baseline gap-1.5">
 
@@ -243,7 +348,9 @@ export default function CatalogCard({
                   sm:text-2xl
                 "
               >
-                {price.toLocaleString("fr-FR")}
+                {price.toLocaleString(
+                  "fr-FR"
+                )}
               </span>
 
               <span
@@ -261,7 +368,7 @@ export default function CatalogCard({
 
           </div>
 
-          {/* PETIT INDICATEUR */}
+          {/* ECONOMIE */}
 
           {hasDiscount && (
             <span
@@ -282,7 +389,6 @@ export default function CatalogCard({
 
         </div>
 
-
         {/* SEPARATOR */}
 
         <div
@@ -294,8 +400,9 @@ export default function CatalogCard({
           "
         />
 
-
-        {/* BUTTON */}
+        {/* =================================================
+            BUTTON
+        ================================================= */}
 
         <Button
           type="button"

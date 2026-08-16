@@ -29,14 +29,6 @@ type CartProduct = Product & {
   quantity: number;
 };
 
-type Order = {
-  id: string;
-  date: string;
-  total: number;
-  status: "pending" | "delivered" | "cancelled";
-  items: CartProduct[];
-};
-
 // ============================================================
 // TEXTES
 // ============================================================
@@ -44,60 +36,42 @@ type Order = {
 const TEXT = {
   cart: {
     label: "Mon panier",
-
     title: "Votre panier",
-
     description:
       "Vérifiez vos articles avant de passer votre commande.",
-
     items: "articles",
-
     image: "Image",
-
-    continueShopping:
-      "← Continuer mes achats",
-
+    continueShopping: "← Continuer mes achats",
     delete: "Supprimer",
   },
 
   summary: {
     title: "Récapitulatif",
-
     order: "Votre commande",
-
     subtotal: "Sous-total",
-
     shipping: "Livraison",
-
     total: "Total",
   },
 
   delivery: {
     title: "Informations de livraison",
-
     description:
       "Indiquez-nous où nous devons vous livrer.",
-
     fullName: "Nom complet",
-
     phone: "Téléphone",
-
     address: "Adresse de livraison",
   },
 
   orderMethod: {
     title: "Mode de commande",
-
     description:
       "Choisissez comment vous souhaitez finaliser votre commande.",
 
     website: "Commander sur le site",
-
     websiteDescription:
       "Votre commande sera enregistrée et vous pourrez suivre son évolution depuis votre espace.",
 
     whatsapp: "Commander via WhatsApp",
-
     whatsappDescription:
       "Votre commande sera enregistrée puis vous pourrez échanger directement avec nous sur WhatsApp.",
   },
@@ -121,27 +95,16 @@ const TEXT = {
 
 const SHIPPING = 2000;
 
-// Modifier à false si la livraison n'est pas activée
+// Modifier à true lorsque la livraison est activée
 const shipping = false;
 
 // ============================================================
 // IDENTIFIER UN PRODUIT
 // ============================================================
 
-/*
- * Deux produits sont considérés comme identiques SI :
- *
- * - leur nom est identique
- * - leur prix est identique
- * - leur description est identique
- *
- * L'id n'est volontairement PAS utilisé.
- */
-
-function getProductKey(
-  product: Product
-) {
+function getProductKey(product: Product) {
   return JSON.stringify([
+    product.id,
     product.name,
     product.price,
     product.description,
@@ -159,8 +122,7 @@ function getUniqueProducts(
     new Map<string, CartProduct>();
 
   for (const product of products) {
-    const key =
-      getProductKey(product);
+    const key = getProductKey(product);
 
     const existing =
       groupedProducts.get(key);
@@ -193,12 +155,30 @@ export default function Cart() {
     useState<Product[]>([]);
 
   const [orderMethod, setOrderMethod] =
-    useState<
-      "website" | "whatsapp"
-    >("website");
+    useState<"website" | "whatsapp">(
+      "website"
+    );
 
   const [loaded, setLoaded] =
     useState(false);
+
+  const [fullName, setFullName] =
+    useState("");
+
+  const [phone, setPhone] =
+    useState("");
+
+  const [address, setAddress] =
+    useState("");
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const [success, setSuccess] =
+    useState("");
 
   // ==========================================================
   // PRODUITS REGROUPÉS
@@ -215,7 +195,6 @@ export default function Cart() {
   useEffect(() => {
     getOrders((products) => {
       setLocal(products);
-
       setLoaded(true);
     });
   }, []);
@@ -244,8 +223,7 @@ export default function Cart() {
       (total, item) => {
         return (
           total +
-          item.price *
-            item.quantity
+          item.price * item.quantity
         );
       },
       0
@@ -257,7 +235,7 @@ export default function Cart() {
     (shipping ? SHIPPING : 0);
 
   // ==========================================================
-  // SUPPRIMER COMPLETEMENT UN PRODUIT
+  // SUPPRIMER COMPLÈTEMENT UN PRODUIT
   // ==========================================================
 
   function handleRemoveCategory(
@@ -297,9 +275,7 @@ export default function Cart() {
         return previous;
       }
 
-      const newLocal = [
-        ...previous,
-      ];
+      const newLocal = [...previous];
 
       newLocal.splice(index, 1);
 
@@ -328,121 +304,129 @@ export default function Cart() {
   }
 
   // ==========================================================
-  // LIRE TOTAL_ORDERS
+  // VALIDATION INFORMATIONS CLIENT
   // ==========================================================
 
-  function getStoredOrders(): Order[] {
-    const storedTotalOrders =
-      localStorage.getItem(
-        "total_orders"
+  function validateCustomerInformation() {
+    if (!fullName.trim()) {
+      setError(
+        "Veuillez renseigner votre nom complet."
       );
 
-    if (!storedTotalOrders) {
-      return [];
+      return false;
     }
 
-    try {
-      const parsed =
-        JSON.parse(
-          storedTotalOrders
-        );
-
-      if (!Array.isArray(parsed)) {
-        return [];
-      }
-
-      return parsed;
-    } catch (error) {
-      console.error(
-        "Impossible de lire total_orders",
-        error
+    if (!phone.trim()) {
+      setError(
+        "Veuillez renseigner votre numéro de téléphone."
       );
 
-      return [];
+      return false;
     }
+
+    if (!address.trim()) {
+      setError(
+        "Veuillez renseigner votre adresse de livraison."
+      );
+
+      return false;
+    }
+
+    return true;
   }
 
   // ==========================================================
-  // ENREGISTRER LA COMMANDE
+  // CRÉER LA COMMANDE
   // ==========================================================
 
-  function saveOrder(
+  async function createOrder(
     products: Product[]
   ) {
-    if (products.length === 0) {
-      return;
-    }
-
-    // ========================================================
-    // RÉCUPÉRER LES ANCIENNES COMMANDES
-    // ========================================================
-
-    const totalOrders =
-      getStoredOrders();
-
-    // ========================================================
-    // REGROUPER LES PRODUITS
-    // ========================================================
-
     const groupedProducts =
       getUniqueProducts(products);
 
     // ========================================================
-    // CALCULER LE TOTAL
+    // FORMAT ATTENDU PAR L'API
+    //
+    // {
+    //   items: [
+    //     {
+    //       productId: 1,
+    //       quantity: 2
+    //     }
+    //   ],
+    //
+    //   customer: {
+    //     fullName: "...",
+    //     phone: "...",
+    //     address: "..."
+    //   }
+    // }
+    //
+    // Le userId n'est PAS envoyé.
+    // Le serveur le récupère avec getCurrentUser().
     // ========================================================
 
-    const orderTotal =
-      groupedProducts.reduce(
-        (total, item) => {
-          return (
-            total +
-            item.price *
-              item.quantity
-          );
+    const items = groupedProducts.map(
+      (item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      })
+    );
+
+    const response = await fetch(
+      "/api/orders",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
         },
-        0
-      ) +
-      (shipping ? SHIPPING : 0);
 
-    // ========================================================
-    // CREER LA COMMANDE
-    // ========================================================
+        body: JSON.stringify({
+          items,
 
-    const newOrder: Order = {
-      id: crypto.randomUUID(),
+          customer: {
+            fullName:
+              fullName.trim(),
 
-      date: new Date().toISOString(),
+            phone:
+              phone.trim(),
 
-      total: orderTotal,
-
-      status: "pending",
-
-      items: groupedProducts,
-    };
-
-    // ========================================================
-    // AJOUTER LA NOUVELLE COMMANDE
-    // ========================================================
-
-    totalOrders.push(
-      newOrder
+            address:
+              address.trim(),
+          },
+        }),
+      }
     );
 
-    // ========================================================
-    // SAUVEGARDER TOTAL_ORDERS
-    // ========================================================
+    let data: any;
 
-    localStorage.setItem(
-      "total_orders",
-      JSON.stringify(
-        totalOrders
-      )
-    );
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error(
+        "Réponse invalide du serveur."
+      );
+    }
 
-    // ========================================================
-    // VIDER LE PANIER
-    // ========================================================
+    if (!response.ok) {
+      throw new Error(
+        data?.error ||
+          data?.message ||
+          "Impossible d'enregistrer la commande."
+      );
+    }
 
+    return data;
+  }
+
+  // ==========================================================
+  // VIDER LE PANIER
+  // ==========================================================
+
+  function clearCart() {
     localStorage.setItem(
       "orders",
       JSON.stringify([])
@@ -455,89 +439,143 @@ export default function Cart() {
   // VALIDATION DE LA COMMANDE
   // ==========================================================
 
-  function handleSubmitOrder() {
-    if (ITEMS.length === 0) {
+  async function handleSubmitOrder() {
+    if (
+      ITEMS.length === 0 ||
+      isSubmitting
+    ) {
       return;
     }
 
-    /*
-     * Copie du panier AVANT de le vider.
-     */
+    // ========================================================
+    // RESET MESSAGES
+    // ========================================================
+
+    setError("");
+    setSuccess("");
+
+    // ========================================================
+    // VALIDATION CLIENT
+    // ========================================================
+
+    if (
+      !validateCustomerInformation()
+    ) {
+      return;
+    }
+
+    // ========================================================
+    // COPIE DU PANIER
+    // ========================================================
 
     const productsToOrder = [
       ...local,
     ];
 
-    // ========================================================
-    // WHATSAPP
-    // ========================================================
+    setIsSubmitting(true);
 
-    if (
-      orderMethod ===
-      "whatsapp"
-    ) {
-      const orderMessage =
-        ITEMS.map(
-          (item) =>
-            `${item.name} × ${item.quantity} — ${(
-              item.price *
-              item.quantity
-            ).toLocaleString(
-              "fr-FR"
-            )} ${TEXT.currency}`
-        ).join("\n");
+    try {
+      // ======================================================
+      // ENREGISTRER LA COMMANDE EN DB
+      // ======================================================
 
-      const message = `Bonjour, je souhaite passer la commande suivante :
+      const result =
+        await createOrder(
+          productsToOrder
+        );
+
+      console.log(
+        "Commande créée :",
+        result
+      );
+
+      // ======================================================
+      // WHATSAPP
+      //
+      // La commande est d'abord enregistrée
+      // en DB puis WhatsApp est ouvert.
+      // ======================================================
+
+      if (
+        orderMethod ===
+        "whatsapp"
+      ) {
+        const orderMessage =
+          ITEMS.map(
+            (item) =>
+              `${item.name} × ${item.quantity} — ${(
+                item.price *
+                item.quantity
+              ).toLocaleString(
+                "fr-FR"
+              )} ${TEXT.currency}`
+          ).join("\n");
+
+        const message = `Bonjour, je souhaite passer la commande suivante :
 
 ${orderMessage}
 
+Nom : ${fullName.trim()}
+Téléphone : ${phone.trim()}
+Adresse : ${address.trim()}
+
 Total : ${total.toLocaleString(
-        "fr-FR"
-      )} ${TEXT.currency}`;
+          "fr-FR"
+        )} ${TEXT.currency}`;
 
-      // ======================================================
-      // ENREGISTRER LA COMMANDE
-      // ======================================================
+        const encodedMessage =
+          encodeURIComponent(
+            message
+          );
 
-      saveOrder(
-        productsToOrder
-      );
+        const phoneNumber =
+          "2290197280976";
 
-      // ======================================================
-      // OUVRIR WHATSAPP
-      // ======================================================
+        const whatsappUrl =
+          `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
-      const encodedMessage =
-        encodeURIComponent(
-          message
+        window.open(
+          whatsappUrl,
+          "_blank",
+          "noopener,noreferrer"
         );
+      }
 
-      const phoneNumber =
-        "2290197280976";
+      // ======================================================
+      // VIDER LE PANIER
+      // ======================================================
 
-      const whatsappUrl =
-        `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+      clearCart();
 
-      window.open(
-        whatsappUrl,
-        "_blank",
-        "noopener,noreferrer"
+      // ======================================================
+      // RESET FORMULAIRE
+      // ======================================================
+
+      setFullName("");
+      setPhone("");
+      setAddress("");
+
+      // ======================================================
+      // SUCCÈS
+      // ======================================================
+
+      setSuccess(
+        `Votre commande #${result.order.id} a été enregistrée avec succès.`
+      );
+    } catch (error) {
+      console.error(
+        "SUBMIT_ORDER_ERROR:",
+        error
       );
 
-      return;
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de la commande."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // ========================================================
-    // COMMANDE SUR LE SITE
-    // ========================================================
-
-    saveOrder(
-      productsToOrder
-    );
-
-    console.log(
-      "Commande enregistrée sur le site."
-    );
   }
 
   // ==========================================================
@@ -557,7 +595,6 @@ Total : ${total.toLocaleString(
         lg:py-16
       "
     >
-
       {/* ======================================================
           HEADER
           ====================================================== */}
@@ -634,6 +671,50 @@ Total : ${total.toLocaleString(
       </div>
 
       {/* ======================================================
+          MESSAGES
+          ====================================================== */}
+
+      {success && (
+        <div
+          className="
+            mb-6
+            rounded-xl
+            border
+            border-green-200
+            bg-green-50
+            p-4
+            text-sm
+            text-green-700
+            dark:border-green-500/20
+            dark:bg-green-500/10
+            dark:text-green-400
+          "
+        >
+          {success}
+        </div>
+      )}
+
+      {error && (
+        <div
+          className="
+            mb-6
+            rounded-xl
+            border
+            border-red-200
+            bg-red-50
+            p-4
+            text-sm
+            text-red-600
+            dark:border-red-500/20
+            dark:bg-red-500/10
+            dark:text-red-400
+          "
+        >
+          {error}
+        </div>
+      )}
+
+      {/* ======================================================
           CONTENT
           ====================================================== */}
 
@@ -647,7 +728,7 @@ Total : ${total.toLocaleString(
       >
 
         {/* ====================================================
-            CART
+            PANIER
             ==================================================== */}
 
         <section className="space-y-4">
@@ -720,9 +801,7 @@ Total : ${total.toLocaleString(
                     "
                   >
 
-                    {/* ==================================================
-                        IMAGE
-                        ================================================== */}
+                    {/* IMAGE */}
 
                     <div
                       className="
@@ -753,9 +832,7 @@ Total : ${total.toLocaleString(
 
                     </div>
 
-                    {/* ==================================================
-                        PRODUCT
-                        ================================================== */}
+                    {/* PRODUIT */}
 
                     <div
                       className="
@@ -775,11 +852,7 @@ Total : ${total.toLocaleString(
                         "
                       >
 
-                        <div
-                          className="
-                            min-w-0
-                          "
-                        >
+                        <div className="min-w-0">
 
                           <h2
                             className="
@@ -835,9 +908,7 @@ Total : ${total.toLocaleString(
 
                       </div>
 
-                      {/* ==================================================
-                          QUANTITY + PRICE
-                          ================================================== */}
+                      {/* QUANTITÉ + PRIX */}
 
                       <div
                         className="
@@ -862,7 +933,7 @@ Total : ${total.toLocaleString(
                           "
                         >
 
-                          {/* MINUS */}
+                          {/* MOINS */}
 
                           <button
                             type="button"
@@ -897,7 +968,7 @@ Total : ${total.toLocaleString(
                             />
                           </button>
 
-                          {/* QUANTITE */}
+                          {/* QUANTITÉ */}
 
                           <span
                             className="
@@ -943,7 +1014,7 @@ Total : ${total.toLocaleString(
 
                         </div>
 
-                        {/* PRIX TOTAL */}
+                        {/* PRIX */}
 
                         <p
                           className="
@@ -974,6 +1045,8 @@ Total : ${total.toLocaleString(
 
           )}
 
+          {/* CONTINUER */}
+
           <div className="pt-2">
 
             <a
@@ -994,7 +1067,7 @@ Total : ${total.toLocaleString(
         </section>
 
         {/* ====================================================
-            SUMMARY
+            RÉCAPITULATIF
             ==================================================== */}
 
         <aside
@@ -1017,9 +1090,7 @@ Total : ${total.toLocaleString(
             "
           >
 
-            {/* ==================================================
-                SUMMARY HEADER
-                ================================================== */}
+            {/* HEADER */}
 
             <div
               className="
@@ -1053,9 +1124,7 @@ Total : ${total.toLocaleString(
 
             </div>
 
-            {/* ==================================================
-                PRICES
-                ================================================== */}
+            {/* PRIX */}
 
             <div
               className="
@@ -1075,11 +1144,7 @@ Total : ${total.toLocaleString(
                 "
               >
 
-                <span
-                  className="
-                    text-neutral-500
-                  "
-                >
+                <span className="text-neutral-500">
                   {TEXT.summary.subtotal}
                 </span>
 
@@ -1108,11 +1173,7 @@ Total : ${total.toLocaleString(
                   "
                 >
 
-                  <span
-                    className="
-                      text-neutral-500
-                    "
-                  >
+                  <span className="text-neutral-500">
                     {TEXT.summary.shipping}
                   </span>
 
@@ -1169,9 +1230,7 @@ Total : ${total.toLocaleString(
 
             </div>
 
-            {/* ==================================================
-                DELIVERY
-                ================================================== */}
+            {/* LIVRAISON */}
 
             <div className="space-y-4 p-6">
 
@@ -1201,6 +1260,12 @@ Total : ${total.toLocaleString(
 
               <input
                 type="text"
+                value={fullName}
+                onChange={(event) =>
+                  setFullName(
+                    event.target.value
+                  )
+                }
                 placeholder={
                   TEXT.delivery.fullName
                 }
@@ -1226,6 +1291,12 @@ Total : ${total.toLocaleString(
 
               <input
                 type="tel"
+                value={phone}
+                onChange={(event) =>
+                  setPhone(
+                    event.target.value
+                  )
+                }
                 placeholder={
                   TEXT.delivery.phone
                 }
@@ -1251,6 +1322,12 @@ Total : ${total.toLocaleString(
 
               <textarea
                 rows={3}
+                value={address}
+                onChange={(event) =>
+                  setAddress(
+                    event.target.value
+                  )
+                }
                 placeholder={
                   TEXT.delivery.address
                 }
@@ -1276,9 +1353,7 @@ Total : ${total.toLocaleString(
 
             </div>
 
-            {/* ==================================================
-                ORDER METHOD
-                ================================================== */}
+            {/* MODE DE COMMANDE */}
 
             <div
               className="
@@ -1315,9 +1390,7 @@ Total : ${total.toLocaleString(
 
               <div className="space-y-3">
 
-                {/* ==================================================
-                    WEBSITE
-                    ================================================== */}
+                {/* SITE */}
 
                 <label
                   className={`
@@ -1421,9 +1494,7 @@ Total : ${total.toLocaleString(
 
                 </label>
 
-                {/* ==================================================
-                    WHATSAPP
-                    ================================================== */}
+                {/* WHATSAPP */}
 
                 <label
                   className={`
@@ -1531,9 +1602,29 @@ Total : ${total.toLocaleString(
 
             </div>
 
-            {/* ==================================================
-                SUBMIT
-                ================================================== */}
+            {/* ERREUR */}
+
+            {error && (
+              <div className="px-6 pb-4">
+
+                <div
+                  className="
+                    rounded-xl
+                    bg-red-50
+                    p-3
+                    text-sm
+                    text-red-600
+                    dark:bg-red-500/10
+                    dark:text-red-400
+                  "
+                >
+                  {error}
+                </div>
+
+              </div>
+            )}
+
+            {/* SUBMIT */}
 
             <div className="p-6 pt-0">
 
@@ -1543,7 +1634,8 @@ Total : ${total.toLocaleString(
                   handleSubmitOrder
                 }
                 disabled={
-                  ITEMS.length === 0
+                  ITEMS.length === 0 ||
+                  isSubmitting
                 }
                 className={`
                   h-12
@@ -1564,8 +1656,10 @@ Total : ${total.toLocaleString(
                 `}
               >
 
-                {orderMethod ===
-                "whatsapp"
+                {isSubmitting
+                  ? "Enregistrement..."
+                  : orderMethod ===
+                    "whatsapp"
                   ? TEXT.order
                       .whatsappSubmit
                   : TEXT.order.submit}

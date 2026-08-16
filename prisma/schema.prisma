@@ -1,19 +1,33 @@
-model Profile {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  email     String   @unique
-  telephone String
-
-  orders    Order[]
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DELIVERED
+  CANCELLED
+}
+
+// ============================================================
+// PRODUCT
+// ============================================================
+
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   name        String
   price       Int
   wasPrice    Int?
-  dimensions String
+  dimensions  String
   category    String
   description String
 
@@ -23,19 +37,92 @@ model Product {
   orderItems OrderItem[]
 }
 
-model Order {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  totalPrice Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+// ============================================================
+// PROFILE
+// ============================================================
 
-  user       Profile    @relation(fields: [userId], references: [id])
-  items      OrderItem[]
+model Profile {
+  id           Int    @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String @unique
+  telephone    String
+  passwordHash String
+
+  orders   Order[]
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+// ============================================================
+// SESSION
+// ============================================================
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ============================================================
+// ORDER
+// ============================================================
+
+model Order {
+  id Int @id @default(autoincrement())
+
+  userId Int
+
+  totalPrice Int
+
+  status OrderStatus @default(PENDING)
+
+  // ----------------------------------------------------------
+  // Informations de livraison
+  // ----------------------------------------------------------
+
+  fullName String
+  phone    String
+  address  String
+
+  // ----------------------------------------------------------
+  // Dates
+  // ----------------------------------------------------------
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ----------------------------------------------------------
+  // Relations
+  // ----------------------------------------------------------
+
+  user Profile @relation(fields: [userId], references: [id])
+
+  items OrderItem[]
+
+  // ----------------------------------------------------------
+  // Index
+  // ----------------------------------------------------------
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================
+// ORDER ITEM
+// ============================================================
+
 model OrderItem {
-  id        Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   orderId   Int
   productId Int
@@ -43,18 +130,35 @@ model OrderItem {
   quantity  Int
   unitPrice Int
 
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  // ----------------------------------------------------------
+  // Relations
+  // ----------------------------------------------------------
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  product Product @relation(fields: [productId], references: [id])
+
+  // ----------------------------------------------------------
+  // Un même produit ne peut apparaître qu'une seule fois
+  // dans une commande.
+  // ----------------------------------------------------------
 
   @@unique([orderId, productId])
+  @@index([productId])
 }
 
+// ============================================================
+// CONTACT
+// ============================================================
+
 model Contact {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  phone     String
-  question  String
-  service   String
+  id Int @id @default(autoincrement())
+
+  name     String
+  email    String
+  phone    String
+  question String
+  service  String
+
   createdAt DateTime @default(now())
 }

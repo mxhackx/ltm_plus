@@ -5,7 +5,6 @@ import Image from "next/image";
 import logo from "@/../public/logo.png";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import "@/app/globals.css";
 
 import {
   Moon,
@@ -18,17 +17,27 @@ import {
   Package,
   Info,
   UserRound,
-  ArrowRight,
+  LogOut,
+  Phone,
   Loader2,
-  Phone as phone
 } from "lucide-react";
+
+import {
+  getCurrentUser,
+  logoutUser,
+} from "@/lib/actions/auth";
+
+import LoginForm from "@/components/LoginForm";
+import RegisterForm from "@/components/RegisterForm";
+
+import "@/app/globals.css";
 
 // ======================================================
 // TYPES
 // ======================================================
 
 type User = {
-  id?: number;
+  id: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -36,7 +45,7 @@ type User = {
 };
 
 // ======================================================
-// DONNÉES DU HEADER
+// DONNÉES
 // ======================================================
 
 const HEADER_DATA = {
@@ -46,15 +55,12 @@ const HEADER_DATA = {
     ariaLabel: "Changer de thème",
   },
 
-  user: {
-    storageKey: "user",
-  },
-
   supplier: {
     whatsapp: {
       number: "22997000000",
       href: "https://wa.me/22997000000",
-      ariaLabel: "Contacter le fournisseur sur WhatsApp",
+      ariaLabel:
+        "Contacter le fournisseur sur WhatsApp",
       title: "WhatsApp",
     },
   },
@@ -84,7 +90,7 @@ const HEADER_DATA = {
       {
         name: "Contact",
         href: "/contact",
-        icon: phone,
+        icon: Phone,
       },
       {
         name: "À propos",
@@ -100,12 +106,6 @@ const HEADER_DATA = {
   },
 
   actions: {
-    contact: {
-      href: "/contact",
-      label: "Contact",
-      ariaLabel: "Contact",
-    },
-
     cart: {
       href: "/panier",
       label: "Panier",
@@ -116,6 +116,16 @@ const HEADER_DATA = {
       href: "/dashboard",
       label: "Mon espace",
       ariaLabel: "Mon espace client",
+    },
+
+    login: {
+      label: "Connexion",
+      ariaLabel: "Se connecter",
+    },
+
+    register: {
+      label: "Créer un compte",
+      ariaLabel: "Créer un compte",
     },
 
     menu: {
@@ -133,104 +143,33 @@ const HEADER_DATA = {
 } as const;
 
 // ======================================================
-// DARK MODE
+// THEME
 // ======================================================
 
-export function getDarkLocaltorage(
-  data: string = HEADER_DATA.theme.storageKey
-): boolean | undefined {
-  const darkStorage = localStorage.getItem(data);
-
-  if (!darkStorage) return undefined;
-
-  return darkStorage === "true";
-}
-
-export const handleDark = (next: boolean) => {
-  if (next) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
-
-  return next;
-};
-
-export const handleDarkClick = (
-  setDark: React.Dispatch<React.SetStateAction<boolean>>
-): void => {
-  setDark((prev) => handleDark(!prev));
-};
-
-// ======================================================
-// RECUPERATION UTILISATEUR
-// ======================================================
-
-async function getCurrentUser(): Promise<User | null> {
-  try {
-    const storedUser = localStorage.getItem(
-      HEADER_DATA.user.storageKey
-    );
-
-    if (!storedUser) {
-      return null;
-    }
-
-    const user = JSON.parse(storedUser);
-
-    if (
-      !user ||
-      !user.firstName ||
-      !user.lastName ||
-      !user.email ||
-      !user.telephone
-    ) {
-      return null;
-    }
-
-    return user;
-  } catch (error) {
-    console.error(
-      "Impossible de récupérer l'utilisateur :",
-      error
-    );
-
-    return null;
-  }
-}
-
-// ======================================================
-// CREATION UTILISATEUR
-// ======================================================
-
-async function createUser(user: User): Promise<User> {
-  localStorage.setItem(
-    HEADER_DATA.user.storageKey,
-    JSON.stringify(user)
+function getDarkStorage(): boolean | undefined {
+  const value = localStorage.getItem(
+    HEADER_DATA.theme.storageKey
   );
 
-  /*
-   * FUTURE API
-   *
-   * Cette partie pourra être réactivée
-   * lorsque /api/user sera disponible.
-   */
-
-  /*
-  try {
-    await fetch("/api/user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-  } catch {
-    // API indisponible pour le moment
+  if (value === null) {
+    return undefined;
   }
-  */
 
-  return user;
+  return value === "true";
+}
+
+function applyDarkMode(dark: boolean) {
+  if (dark) {
+    document.documentElement.classList.add(
+      "dark"
+    );
+  } else {
+    document.documentElement.classList.remove(
+      "dark"
+    );
+  }
+
+  return dark;
 }
 
 // ======================================================
@@ -242,15 +181,34 @@ function ThemeToggle({
   setDark,
 }: {
   dark: boolean;
-  setDark: React.Dispatch<React.SetStateAction<boolean>>;
+  setDark: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
 }) {
+  const handleClick = () => {
+    setDark((previous) => {
+      const next = !previous;
+
+      applyDarkMode(next);
+
+      localStorage.setItem(
+        HEADER_DATA.theme.storageKey,
+        String(next)
+      );
+
+      return next;
+    });
+  };
+
   return (
     <button
       type="button"
       role="switch"
       aria-checked={dark}
-      aria-label={HEADER_DATA.theme.ariaLabel}
-      onClick={() => handleDarkClick(setDark)}
+      aria-label={
+        HEADER_DATA.theme.ariaLabel
+      }
+      onClick={handleClick}
       className="
         relative
         flex
@@ -307,541 +265,105 @@ function ThemeToggle({
 }
 
 // ======================================================
-// MODAL CREATION COMPTE
-// ======================================================
-
-function CreateAccountModal({
-  onClose,
-  onCreated,
-}: {
-  onClose: () => void;
-  onCreated: (user: User) => void;
-}) {
-  const [form, setForm] = useState<User>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    telephone: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = event.target;
-
-    setForm((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-
-    setError("");
-  };
-
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
-
-    if (
-      !form.firstName.trim() ||
-      !form.lastName.trim() ||
-      !form.email.trim() ||
-      !form.telephone.trim()
-    ) {
-      setError(
-        "Veuillez remplir tous les champs."
-      );
-
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const user = await createUser({
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        email: form.email.trim(),
-        telephone: form.telephone.trim(),
-      });
-
-      onCreated(user);
-    } catch {
-      setError(
-        "Impossible de créer votre compte."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div
-      className="
-        fixed
-        inset-0
-        z-[100]
-        flex
-        items-center
-        justify-center
-        bg-black/30
-        p-4
-        backdrop-blur-md
-        dark:bg-black/60
-      "
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-    >
-      <div
-        className="
-          relative
-          w-full
-          max-w-md
-          overflow-hidden
-          rounded-3xl
-          border
-          border-black/10
-          bg-white
-          p-6
-          shadow-2xl
-          dark:border-white/10
-          dark:bg-[#111]
-          sm:p-8
-        "
-      >
-        {/* GLOW */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            -right-20
-            -top-20
-            h-48
-            w-48
-            rounded-full
-            bg-(--orange)
-            opacity-10
-            blur-[80px]
-          "
-        />
-
-        {/* CLOSE */}
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="
-            absolute
-            right-4
-            top-4
-            rounded-full
-            p-2
-            text-neutral-400
-            transition
-            hover:bg-black/5
-            hover:text-(--orange)
-            dark:hover:bg-white/10
-          "
-        >
-          <X size={18} />
-        </button>
-
-        {/* ICON */}
-
-        <div
-          className="
-            flex
-            h-14
-            w-14
-            items-center
-            justify-center
-            rounded-2xl
-            bg-(--orange)/10
-            text-(--orange)
-          "
-        >
-          <UserRound size={25} />
-        </div>
-
-        {/* TITLE */}
-
-        <div className="relative mt-5">
-          <p
-            className="
-              text-[10px]
-              font-semibold
-              uppercase
-              tracking-[0.2em]
-              text-(--orange)
-            "
-          >
-            Espace client
-          </p>
-
-          <h2
-            className="
-              mt-1
-              text-2xl
-              font-bold
-              tracking-tight
-              text-neutral-900
-              dark:text-white
-            "
-          >
-            Créez votre compte
-          </h2>
-
-          <p
-            className="
-              mt-2
-              text-sm
-              leading-6
-              text-neutral-500
-              dark:text-neutral-400
-            "
-          >
-            Créez votre espace client pour retrouver
-            facilement vos commandes et votre
-            historique d'achats.
-          </p>
-        </div>
-
-        {/* FORM */}
-
-        <form
-          onSubmit={handleSubmit}
-          className="relative mt-7 space-y-4"
-        >
-          {/* PRENOM + NOM */}
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label
-                htmlFor="firstName"
-                className="
-                  mb-1.5
-                  block
-                  text-xs
-                  font-medium
-                  text-neutral-600
-                  dark:text-neutral-300
-                "
-              >
-                Prénom
-              </label>
-
-              <input
-                id="firstName"
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                placeholder="Jean"
-                autoComplete="given-name"
-                className="
-                  h-11
-                  w-full
-                  rounded-xl
-                  border
-                  border-neutral-200
-                  bg-neutral-50
-                  px-3.5
-                  text-sm
-                  outline-none
-                  transition
-                  placeholder:text-neutral-400
-                  focus:border-(--orange)
-                  focus:ring-2
-                  focus:ring-(--orange)/10
-                  dark:border-white/10
-                  dark:bg-white/5
-                  dark:text-white
-                "
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="lastName"
-                className="
-                  mb-1.5
-                  block
-                  text-xs
-                  font-medium
-                  text-neutral-600
-                  dark:text-neutral-300
-                "
-              >
-                Nom
-              </label>
-
-              <input
-                id="lastName"
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                placeholder="Dupont"
-                autoComplete="family-name"
-                className="
-                  h-11
-                  w-full
-                  rounded-xl
-                  border
-                  border-neutral-200
-                  bg-neutral-50
-                  px-3.5
-                  text-sm
-                  outline-none
-                  transition
-                  placeholder:text-neutral-400
-                  focus:border-(--orange)
-                  focus:ring-2
-                  focus:ring-(--orange)/10
-                  dark:border-white/10
-                  dark:bg-white/5
-                  dark:text-white
-                "
-              />
-            </div>
-          </div>
-
-          {/* EMAIL */}
-
-          <div>
-            <label
-              htmlFor="email"
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-medium
-                text-neutral-600
-                dark:text-neutral-300
-              "
-            >
-              Adresse email
-            </label>
-
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="jean@email.com"
-              autoComplete="email"
-              className="
-                h-11
-                w-full
-                rounded-xl
-                border
-                border-neutral-200
-                bg-neutral-50
-                px-3.5
-                text-sm
-                outline-none
-                transition
-                placeholder:text-neutral-400
-                focus:border-(--orange)
-                focus:ring-2
-                focus:ring-(--orange)/10
-                dark:border-white/10
-                dark:bg-white/5
-                dark:text-white
-              "
-            />
-          </div>
-
-          {/* TELEPHONE */}
-
-          <div>
-            <label
-              htmlFor="telephone"
-              className="
-                mb-1.5
-                block
-                text-xs
-                font-medium
-                text-neutral-600
-                dark:text-neutral-300
-              "
-            >
-              Téléphone
-            </label>
-
-            <input
-              id="telephone"
-              name="telephone"
-              type="tel"
-              value={form.telephone}
-              onChange={handleChange}
-              placeholder="+229 97 00 00 00"
-              autoComplete="tel"
-              className="
-                h-11
-                w-full
-                rounded-xl
-                border
-                border-neutral-200
-                bg-neutral-50
-                px-3.5
-                text-sm
-                outline-none
-                transition
-                placeholder:text-neutral-400
-                focus:border-(--orange)
-                focus:ring-2
-                focus:ring-(--orange)/10
-                dark:border-white/10
-                dark:bg-white/5
-                dark:text-white
-              "
-            />
-          </div>
-
-          {/* ERROR */}
-
-          {error && (
-            <p
-              className="
-                rounded-xl
-                bg-red-500/10
-                px-3
-                py-2.5
-                text-xs
-                text-red-500
-              "
-            >
-              {error}
-            </p>
-          )}
-
-          {/* SUBMIT */}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="
-              flex
-              h-11
-              w-full
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-(--orange)
-              text-sm
-              font-semibold
-              text-black
-              shadow-[0_0_25px_-8px_var(--orange)]
-              transition
-              hover:brightness-110
-              disabled:cursor-not-allowed
-              disabled:opacity-60
-            "
-          >
-            {loading ? (
-              <>
-                <Loader2
-                  size={17}
-                  className="animate-spin"
-                />
-
-                Création...
-              </>
-            ) : (
-              <>
-                Créer mon compte
-
-                <ArrowRight size={16} />
-              </>
-            )}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-// ======================================================
 // HEADER
 // ======================================================
 
 export default function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // ====================================================
+  // ÉTATS
+  // ====================================================
+
   const [dark, setDark] = useState(
     HEADER_DATA.theme.defaultDark
   );
 
   const [menu, setMenu] = useState(false);
 
-  const [user, setUser] = useState<User | null>(
-    null
-  );
+  const [user, setUser] =
+    useState<User | null>(null);
 
-  const [showAccountModal, setShowAccountModal] =
+  const [loadingUser, setLoadingUser] =
+    useState(true);
+
+  const [showLogin, setShowLogin] =
     useState(false);
 
-  const pathname = usePathname();
+  const [showRegister, setShowRegister] =
+    useState(false);
 
-  const router = useRouter();
-
-  const {
-    navigation,
-    actions,
-    logo: logoData,
-  } = HEADER_DATA;
+  const [loggingOut, setLoggingOut] =
+    useState(false);
 
   // ====================================================
   // INITIALISATION
   // ====================================================
 
   useEffect(() => {
-    const isDark = getDarkLocaltorage();
+    // ----------------------------------------------
+    // THEME
+    // ----------------------------------------------
 
-    if (isDark !== undefined) {
-      setDark(handleDark(isDark));
+    const storedTheme =
+      getDarkStorage();
+
+    if (storedTheme !== undefined) {
+      setDark(
+        applyDarkMode(storedTheme)
+      );
     } else {
-      handleDark(
+      applyDarkMode(
         HEADER_DATA.theme.defaultDark
       );
     }
 
-    getCurrentUser().then((currentUser) => {
-      setUser(currentUser);
-    });
+    // ----------------------------------------------
+    // UTILISATEUR
+    // ----------------------------------------------
+
+    async function loadUser() {
+      try {
+        const currentUser =
+          await getCurrentUser();
+
+        setUser(currentUser);
+      } catch (error) {
+        console.error(
+          "HEADER_USER_ERROR:",
+          error
+        );
+
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
+      }
+    }
+
+    loadUser();
   }, []);
 
   // ====================================================
-  // THEME
-  // ====================================================
-
-  useEffect(() => {
-    localStorage.setItem(
-      HEADER_DATA.theme.storageKey,
-      dark ? "true" : "false"
-    );
-  }, [dark]);
-
-  // ====================================================
-  // MENU
+  // BODY SCROLL
   // ====================================================
 
   useEffect(() => {
     document.body.style.overflow =
-      menu || showAccountModal
+      menu ||
+      showLogin ||
+      showRegister
         ? "hidden"
         : "";
 
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menu, showAccountModal]);
+  }, [
+    menu,
+    showLogin,
+    showRegister,
+  ]);
 
   // ====================================================
   // ESC
@@ -853,7 +375,8 @@ export default function Header() {
     ) => {
       if (event.key === "Escape") {
         setMenu(false);
-        setShowAccountModal(false);
+        setShowLogin(false);
+        setShowRegister(false);
       }
     };
 
@@ -871,28 +394,118 @@ export default function Header() {
   }, []);
 
   // ====================================================
-  // COMPTE CREE
+  // CONNEXION
   // ====================================================
 
-  const handleUserCreated = (
-    newUser: User
-  ) => {
-    setUser(newUser);
-    setShowAccountModal(false);
-
-    router.push(
-      actions.dashboard.href
-    );
+  const handleLogin = () => {
+    setMenu(false);
+    setShowRegister(false);
+    setShowLogin(true);
   };
 
   // ====================================================
-  // NOM AFFICHÉ
+  // UTILISATEUR CONNECTÉ
   // ====================================================
 
-  const userDisplayName =
-    user?.firstName ||
-    user?.email ||
-    "";
+  const handleLoggedIn = (
+    loggedUser: User
+  ) => {
+    setUser(loggedUser);
+
+    setShowLogin(false);
+    setShowRegister(false);
+    setMenu(false);
+
+    router.refresh();
+    router.push("/dashboard");
+  };
+
+  // ====================================================
+  // INSCRIPTION
+  // ====================================================
+
+  const handleRegister = () => {
+    setMenu(false);
+    setShowLogin(false);
+    setShowRegister(true);
+  };
+
+  // ====================================================
+  // INSCRIPTION TERMINÉE
+  // ====================================================
+
+  const handleRegistered = (
+    registeredUser: User
+  ) => {
+    setUser(registeredUser);
+
+    setShowRegister(false);
+    setShowLogin(false);
+    setMenu(false);
+
+    router.refresh();
+    router.push("/dashboard");
+  };
+
+  // ====================================================
+  // LOGOUT
+  // ====================================================
+
+  const handleLogout = async () => {
+    if (loggingOut) {
+      return;
+    }
+
+    setLoggingOut(true);
+
+    try {
+      const result =
+        await logoutUser();
+
+      if (!result.success) {
+        console.error(
+          result.error
+        );
+
+        return;
+      }
+
+      setUser(null);
+      setMenu(false);
+
+      router.refresh();
+      router.push("/");
+    } catch (error) {
+      console.error(
+        "LOGOUT_CLIENT_ERROR:",
+        error
+      );
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  // ====================================================
+  // ESPACE CLIENT
+  // ====================================================
+
+  const handleDashboard = () => {
+    if (loadingUser) {
+      return;
+    }
+
+    if (!user) {
+      setMenu(false);
+      setShowLogin(true);
+      return;
+    }
+
+    setMenu(false);
+
+    router.push(
+      HEADER_DATA.actions.dashboard.href
+    );
+  };
 
   // ====================================================
   // RENDER
@@ -920,7 +533,7 @@ export default function Header() {
         ================================================= */}
 
         <Link
-          href={logoData.href}
+          href={HEADER_DATA.logo.href}
           className="
             relative
             h-11
@@ -933,7 +546,7 @@ export default function Header() {
         >
           <Image
             src={logo}
-            alt={logoData.alt}
+            alt={HEADER_DATA.logo.alt}
             fill
             priority
             className="object-cover"
@@ -941,7 +554,7 @@ export default function Header() {
         </Link>
 
         {/* =================================================
-            DESKTOP NAVIGATION
+            DESKTOP NAV
         ================================================= */}
 
         <div
@@ -955,32 +568,27 @@ export default function Header() {
             md:flex
           "
         >
-          {navigation.links.map(
+          {HEADER_DATA.navigation.links.map(
             ({ name, href }) => {
               const active =
                 pathname === href;
 
-              /*
-               * MON ESPACE
-               */
+              // ------------------------------------------
+              // MON ESPACE
+              // ------------------------------------------
 
               if (
                 href ===
-                actions.dashboard.href
+                HEADER_DATA.actions.dashboard
+                  .href
               ) {
                 return (
                   <button
                     key={href}
                     type="button"
-                    onClick={() => {
-                      if (!user) {
-                        setShowAccountModal(
-                          true
-                        );
-                      } else {
-                        router.push(href);
-                      }
-                    }}
+                    onClick={
+                      handleDashboard
+                    }
                     className={`
                       transition
                       hover:text-(--orange)
@@ -995,6 +603,10 @@ export default function Header() {
                   </button>
                 );
               }
+
+              // ------------------------------------------
+              // LIEN NORMAL
+              // ------------------------------------------
 
               return (
                 <Link
@@ -1031,7 +643,9 @@ export default function Header() {
           "
         >
 
-          {/* THEME */}
+          {/* =================================================
+              THEME
+          ================================================= */}
 
           <ThemeToggle
             dark={dark}
@@ -1044,7 +658,8 @@ export default function Header() {
 
           <a
             href={
-              HEADER_DATA.supplier.whatsapp.href
+              HEADER_DATA.supplier.whatsapp
+                .href
             }
             target="_blank"
             rel="noopener noreferrer"
@@ -1053,7 +668,8 @@ export default function Header() {
                 .ariaLabel
             }
             title={
-              HEADER_DATA.supplier.whatsapp.title
+              HEADER_DATA.supplier.whatsapp
+                .title
             }
             className="
               rounded-full
@@ -1080,9 +696,12 @@ export default function Header() {
           ================================================= */}
 
           <Link
-            href={actions.cart.href}
+            href={
+              HEADER_DATA.actions.cart.href
+            }
             aria-label={
-              actions.cart.ariaLabel
+              HEADER_DATA.actions.cart
+                .ariaLabel
             }
             className="
               rounded-full
@@ -1097,16 +716,31 @@ export default function Header() {
           </Link>
 
           {/* =================================================
-              ESPACE CLIENT
+              UTILISATEUR
           ================================================= */}
 
-          {user ? (
+          {loadingUser ? (
+            <div
+              className="
+                rounded-full
+                p-2
+              "
+            >
+              <Loader2
+                size={20}
+                className="animate-spin"
+              />
+            </div>
+          ) : user ? (
+
+            /* =============================================
+               UTILISATEUR CONNECTÉ
+            ============================================= */
+
             <button
               type="button"
-              onClick={() =>
-                router.push(
-                  actions.dashboard.href
-                )
+              onClick={
+                handleDashboard
               }
               title={user.email}
               className="
@@ -1121,8 +755,6 @@ export default function Header() {
                 dark:hover:bg-white/10
               "
             >
-              {/* AVATAR */}
-
               <div
                 className="
                   flex
@@ -1136,15 +768,12 @@ export default function Header() {
                   text-xs
                   font-bold
                   text-black
-                  shadow-[0_0_15px_-5px_var(--orange)]
                 "
               >
                 {user.firstName
                   .charAt(0)
                   .toUpperCase()}
               </div>
-
-              {/* NOM */}
 
               <span
                 className="
@@ -1156,45 +785,93 @@ export default function Header() {
                   lg:block
                 "
               >
-                {userDisplayName}
+                {user.firstName}
               </span>
             </button>
+
           ) : (
-            <button
-              type="button"
-              onClick={() =>
-                setShowAccountModal(
-                  true
-                )
-              }
-              aria-label={
-                actions.dashboard
-                  .ariaLabel
-              }
-              title={
-                actions.dashboard.label
-              }
+
+            /* =============================================
+               UTILISATEUR NON CONNECTÉ
+            ============================================= */
+
+            <div
               className="
-                rounded-full
-                p-2
-                transition
-                hover:bg-black/5
-                hover:text-(--orange)
-                dark:hover:bg-white/10
+                hidden
+                items-center
+                gap-2
+                md:flex
               "
             >
-              <UserRound size={20} />
-            </button>
+
+              {/* CONNEXION */}
+
+              <button
+                type="button"
+                onClick={
+                  handleLogin
+                }
+                className="
+                  rounded-lg
+                  px-3
+                  py-2
+                  text-sm
+                  font-medium
+                  transition
+                  hover:bg-black/5
+                  hover:text-(--orange)
+                  dark:hover:bg-white/10
+                "
+              >
+                {
+                  HEADER_DATA
+                    .actions
+                    .login
+                    .label
+                }
+              </button>
+
+              {/* INSCRIPTION */}
+
+              <button
+                type="button"
+                onClick={
+                  handleRegister
+                }
+                className="
+                  rounded-lg
+                  bg-(--orange)
+                  px-3
+                  py-2
+                  text-sm
+                  font-semibold
+                  text-black
+                  shadow-[0_0_20px_-8px_var(--orange)]
+                  transition
+                  hover:brightness-110
+                "
+              >
+                {
+                  HEADER_DATA
+                    .actions
+                    .register
+                    .label
+                }
+              </button>
+
+            </div>
           )}
 
           {/* =================================================
-              MENU MOBILE
+              MOBILE MENU BUTTON
           ================================================= */}
 
           <button
             type="button"
             aria-label={
-              actions.menu.open
+              menu
+                ? HEADER_DATA.actions.menu.close
+                : HEADER_DATA.actions.menu.open
             }
             aria-expanded={menu}
             onClick={() =>
@@ -1212,18 +889,18 @@ export default function Header() {
           >
             <Menu size={20} />
           </button>
+
         </div>
       </nav>
 
       {/* =================================================
-          OVERLAY MOBILE
+          MOBILE OVERLAY
       ================================================= */}
 
       <div
         onClick={() =>
           setMenu(false)
         }
-        aria-hidden={!menu}
         className={`
           fixed
           inset-0
@@ -1243,11 +920,10 @@ export default function Header() {
       />
 
       {/* =================================================
-          MENU MOBILE
+          MOBILE MENU
       ================================================= */}
 
       <aside
-        aria-hidden={!menu}
         className={`
           fixed
           right-0
@@ -1279,10 +955,11 @@ export default function Header() {
         `}
       >
 
-        {/* GLOW */}
+        {/* =================================================
+            GLOW
+        ================================================= */}
 
         <div
-          aria-hidden="true"
           className="
             pointer-events-none
             absolute
@@ -1299,29 +976,31 @@ export default function Header() {
         />
 
         {/* =================================================
-            HEADER MENU
+            MENU HEADER
         ================================================= */}
 
         <div
           className="
             relative
-            mb-10
+            mb-8
             flex
             items-center
             justify-between
           "
         >
 
-          {/* USER / LOGO */}
-
           {user ? (
+
             <button
               type="button"
               onClick={() => {
                 setMenu(false);
 
                 router.push(
-                  actions.dashboard.href
+                  HEADER_DATA
+                    .actions
+                    .dashboard
+                    .href
                 );
               }}
               className="
@@ -1349,16 +1028,33 @@ export default function Header() {
               </div>
 
               <div className="text-left">
-                <p className="text-sm font-semibold">
+
+                <p
+                  className="
+                    text-sm
+                    font-semibold
+                  "
+                >
                   {user.firstName}
                 </p>
 
-                <p className="max-w-[150px] truncate text-[10px] text-neutral-500 dark:text-neutral-400">
+                <p
+                  className="
+                    max-w-[150px]
+                    truncate
+                    text-[10px]
+                    text-neutral-500
+                    dark:text-neutral-400
+                  "
+                >
                   {user.email}
                 </p>
+
               </div>
             </button>
+
           ) : (
+
             <div
               className="
                 relative
@@ -1372,14 +1068,14 @@ export default function Header() {
             >
               <Image
                 src={logo}
-                alt={logoData.alt}
+                alt={
+                  HEADER_DATA.logo.alt
+                }
                 fill
                 className="object-cover"
               />
             </div>
           )}
-
-          {/* CLOSE */}
 
           <button
             type="button"
@@ -1387,7 +1083,8 @@ export default function Header() {
               setMenu(false)
             }
             aria-label={
-              actions.menu.close
+              HEADER_DATA.actions.menu
+                .close
             }
             className="
               rounded-full
@@ -1402,10 +1099,11 @@ export default function Header() {
           >
             <X size={20} />
           </button>
+
         </div>
 
         {/* =================================================
-            LIENS
+            LINKS
         ================================================= */}
 
         <div
@@ -1416,41 +1114,32 @@ export default function Header() {
             gap-2.5
           "
         >
-          {navigation.links.map(
+
+          {HEADER_DATA.navigation.links.map(
             ({
               name,
               href,
               icon: Icon,
             }) => {
+
               const active =
                 pathname === href;
 
-              /*
-               * MON ESPACE
-               */
+              // ------------------------------------------
+              // MON ESPACE
+              // ------------------------------------------
 
               if (
                 href ===
-                actions.dashboard.href
+                HEADER_DATA.actions.dashboard
+                  .href
               ) {
                 return (
                   <button
                     key={href}
                     type="button"
                     onClick={() => {
-                      if (!user) {
-                        setMenu(false);
-
-                        setShowAccountModal(
-                          true
-                        );
-                      } else {
-                        setMenu(false);
-
-                        router.push(
-                          href
-                        );
-                      }
+                      handleDashboard();
                     }}
                     className={`
                       flex
@@ -1465,30 +1154,12 @@ export default function Header() {
                       transition
                       ${
                         active
-                          ? `
-                            border-(--orange)
-                            bg-(--orange)
-                            text-black
-                            shadow-[0_0_20px_-8px_var(--orange)]
-                          `
-                          : `
-                            border-black/5
-                            bg-black/5
-                            text-neutral-800
-                            hover:border-(--orange)/30
-                            hover:bg-(--orange)/10
-                            hover:text-(--orange)
-                            dark:border-white/5
-                            dark:bg-white/5
-                            dark:text-white/85
-                            dark:hover:border-(--orange)/30
-                            dark:hover:bg-white/10
-                            dark:hover:text-(--orange)
-                          `
+                          ? "border-(--orange) bg-(--orange) text-black"
+                          : "border-black/5 bg-black/5 text-neutral-800 hover:border-(--orange)/30 hover:bg-(--orange)/10 hover:text-(--orange) dark:border-white/5 dark:bg-white/5 dark:text-white/85"
                       }
                     `}
                   >
-                    {Icon && <Icon size={18} />}
+                    <Icon size={18} />
 
                     <span className="flex-1">
                       {name}
@@ -1501,6 +1172,10 @@ export default function Header() {
                   </button>
                 );
               }
+
+              // ------------------------------------------
+              // LIEN NORMAL
+              // ------------------------------------------
 
               return (
                 <Link
@@ -1520,30 +1195,12 @@ export default function Header() {
                     transition
                     ${
                       active
-                        ? `
-                          border-(--orange)
-                          bg-(--orange)
-                          text-black
-                          shadow-[0_0_20px_-8px_var(--orange)]
-                        `
-                        : `
-                          border-black/5
-                          bg-black/5
-                          text-neutral-800
-                          hover:border-(--orange)/30
-                          hover:bg-(--orange)/10
-                          hover:text-(--orange)
-                          dark:border-white/5
-                          dark:bg-white/5
-                          dark:text-white/85
-                          dark:hover:border-(--orange)/30
-                          dark:hover:bg-white/10
-                          dark:hover:text-(--orange)
-                        `
+                        ? "border-(--orange) bg-(--orange) text-black"
+                        : "border-black/5 bg-black/5 text-neutral-800 hover:border-(--orange)/30 hover:bg-(--orange)/10 hover:text-(--orange) dark:border-white/5 dark:bg-white/5 dark:text-white/85"
                     }
                   `}
                 >
-                  {Icon && <Icon size={18} />}
+                  <Icon size={18} />
 
                   <span className="flex-1">
                     {name}
@@ -1557,18 +1214,131 @@ export default function Header() {
               );
             }
           )}
+
         </div>
 
         {/* =================================================
-            CONTACT MOBILE
+            LOGIN / REGISTER
+        ================================================= */}
+
+        {!user && !loadingUser && (
+          <div
+            className="
+              relative
+              mt-5
+              grid
+              grid-cols-2
+              gap-2
+            "
+          >
+
+            {/* CONNEXION */}
+
+            <button
+              type="button"
+              onClick={
+                handleLogin
+              }
+              className="
+                rounded-xl
+                border
+                border-black/10
+                bg-black/5
+                px-3
+                py-3
+                text-sm
+                font-semibold
+                transition
+                hover:border-(--orange)
+                hover:text-(--orange)
+                dark:border-white/10
+                dark:bg-white/5
+              "
+            >
+              Connexion
+            </button>
+
+            {/* INSCRIPTION */}
+
+            <button
+              type="button"
+              onClick={
+                handleRegister
+              }
+              className="
+                rounded-xl
+                bg-(--orange)
+                px-3
+                py-3
+                text-sm
+                font-semibold
+                text-black
+                transition
+                hover:brightness-110
+              "
+            >
+              Inscription
+            </button>
+
+          </div>
+        )}
+
+        {/* =================================================
+            LOGOUT
+        ================================================= */}
+
+        {user && (
+          <button
+            type="button"
+            disabled={loggingOut}
+            onClick={handleLogout}
+            className="
+              relative
+              mt-5
+              flex
+              w-full
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border
+              border-red-500/20
+              bg-red-500/5
+              px-4
+              py-3
+              text-sm
+              font-medium
+              text-red-500
+              transition
+              hover:bg-red-500/10
+              disabled:opacity-50
+            "
+          >
+
+            {loggingOut ? (
+              <Loader2
+                size={17}
+                className="animate-spin"
+              />
+            ) : (
+              <LogOut size={17} />
+            )}
+
+            {loggingOut
+              ? "Déconnexion..."
+              : "Se déconnecter"}
+
+          </button>
+        )}
+
+        {/* =================================================
+            CONTACT
         ================================================= */}
 
         <div
           className="
-            absolute
-            bottom-8
-            left-6
-            right-6
+            relative
+            mt-5
           "
         >
           <Link
@@ -1594,23 +1364,51 @@ export default function Header() {
               hover:brightness-110
             "
           >
-            {HEADER_DATA.mobileMenu.contact.label}
+            {
+              HEADER_DATA
+                .mobileMenu
+                .contact
+                .label
+            }
           </Link>
         </div>
+
       </aside>
 
       {/* =================================================
-          MODAL CREATION COMPTE
+          LOGIN MODAL
       ================================================= */}
 
-      {showAccountModal && (
-        <CreateAccountModal
+      {showLogin && (
+        <LoginForm
           onClose={() =>
-            setShowAccountModal(false)
+            setShowLogin(false)
           }
-          onCreated={handleUserCreated}
+          onLoggedIn={
+            handleLoggedIn
+          }
         />
       )}
+
+      {/* =================================================
+          REGISTER MODAL
+      ================================================= */}
+
+      {showRegister && (
+        <RegisterForm
+          onClose={() =>
+            setShowRegister(false)
+          }
+          onRegistered={
+            handleRegistered
+          }
+          onLogin={() => {
+            setShowRegister(false);
+            setShowLogin(true);
+          }}
+        />
+      )}
+
     </header>
   );
 }

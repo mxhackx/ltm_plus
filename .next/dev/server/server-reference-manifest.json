@@ -1,5 +1,261 @@
 {
-  "node": {},
+  "node": {
+    "003bf1187151773b909c5cf20367d9117ab28fdcbf": {
+      "workers": {
+        "app/(client)/about/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/about/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/catalog/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/catalog/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/contact/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/contact/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/contact.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/panier/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/panier/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/auth.ts",
+      "exportedName": "logoutUser"
+    },
+    "00d04bb383147662b69e9616ba1083d8f80abb7da7": {
+      "workers": {
+        "app/(client)/about/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/about/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/catalog/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/catalog/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/contact/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/contact/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/contact.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/panier/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/panier/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/auth.ts",
+      "exportedName": "getCurrentUser"
+    },
+    "408f81c1757339c14608c81a17762c48df3ca5994f": {
+      "workers": {
+        "app/(client)/about/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/about/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/catalog/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/catalog/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/contact/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/contact/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/contact.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/panier/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/panier/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/auth.ts",
+      "exportedName": "registerUser"
+    },
+    "405001e5959fb89d8cce972b914c7e058e19a48a28": {
+      "workers": {
+        "app/(client)/about/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/about/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/catalog/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/catalog/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/contact/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/contact/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/contact.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/panier/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/panier/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/auth.ts",
+      "exportedName": "loginUser"
+    },
+    "00642811b02197a1a1d797bb81e9f5023a5594627d": {
+      "workers": {
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/account.ts",
+      "exportedName": "getCurrentUserOrders"
+    },
+    "00d7e7a9f88d69a5188aefdbab06a9b122072b061f": {
+      "workers": {
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/account.ts",
+      "exportedName": "deleteCurrentUser"
+    },
+    "400d723195acdc6a6d4f7503d0b87fc8f06261ddad": {
+      "workers": {
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/account.ts",
+      "exportedName": "deleteOrder"
+    },
+    "40d932d0e2f5d62823a7adf9507cd59fd25d69f80d": {
+      "workers": {
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/account.ts",
+      "exportedName": "getOrderById"
+    },
+    "00f5dc54af4a02f94c2a7fff0d1f77bb1f1b0e6f88": {
+      "workers": {
+        "app/(client)/dashboard/orders/[id]/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/orders/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        },
+        "app/(client)/dashboard/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/account.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/auth.ts",
+      "exportedName": "isAuthenticated"
+    },
+    "400b0b7f771bf0c1f5b7aff11dc1482cba9ca2056e": {
+      "workers": {
+        "app/(client)/contact/page": {
+          "moduleId": "[project]/.next-internal/server/app/(client)/contact/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/actions/auth.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/lib/actions/contact.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": true,
+          "codeHash": null
+        }
+      },
+      "filename": "src/lib/actions/contact.ts",
+      "exportedName": "insertContact"
+    }
+  },
   "edge": {},
-  "encryptionKey": "9x4n1zPy40Cffwy4qvs28EfrQSh+nfEeOo4D+FD/2/s="
+  "encryptionKey": "U4FRtVV9VcGllLPZtnkS7Tym2faaGMrHe2kfrYLjSgU="
 }

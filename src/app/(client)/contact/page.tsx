@@ -6,6 +6,7 @@ import { Factory, Phone, ShoppingBag } from "lucide-react";
 import work from "@/../public/worker.jpeg";
 import Image from "next/image";
 import { contactSchema } from "@/lib/validations/contact";
+import { insertContact } from "@/lib/actions/contact";
 
 const CONTACT_DATA = {
   content: {
@@ -65,9 +66,6 @@ const CONTACT_DATA = {
       },
 
       messages: {
-        invalidServerResponse:
-          "Le serveur a renvoyé une réponse invalide.",
-
         genericServerError:
           "Une erreur est survenue. Veuillez réessayer.",
 
@@ -160,6 +158,10 @@ export default function Contact() {
     setServerError("");
     setSuccessMessage("");
 
+    // =========================
+    // VALIDATION CLIENT
+    // =========================
+
     const validationResult = contactSchema.safeParse(form);
 
     if (!validationResult.success) {
@@ -184,41 +186,19 @@ export default function Contact() {
       return;
     }
 
+    // =========================
+    // SERVER ACTION
+    // =========================
+
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(validationResult.data),
-      });
+      const result = await insertContact(
+        validationResult.data
+      );
 
-      const text = await response.text();
-
-      console.log("STATUS :", response.status);
-      console.log("RESPONSE :", text);
-
-      let data;
-
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (error) {
-        console.log(
-          "Réponse invalide du serveur :",
-          error
-        );
-
+      // Erreur renvoyée par la Server Action
+      if ("error" in result) {
         setServerError(
-          CONTACT_DATA.content.form.messages
-            .invalidServerResponse
-        );
-
-        return;
-      }
-
-      if (!response.ok) {
-        setServerError(
-          data.error ||
+          result.error ||
             CONTACT_DATA.content.form.messages
               .genericServerError
         );
@@ -226,7 +206,8 @@ export default function Contact() {
         return;
       }
 
-      setSuccessMessage(data.message);
+      // Succès
+      setSuccessMessage(result.message);
 
       setForm({
         name: "",
@@ -243,11 +224,9 @@ export default function Contact() {
         service: "",
         question: "",
       });
-
-      console.log("Data reçue :", data);
     } catch (error) {
       console.error(
-        "Error submitting form:",
+        "Erreur lors de l'envoi du formulaire :",
         error
       );
 
@@ -260,9 +239,7 @@ export default function Contact() {
     }
   }
 
-  const {
-    content,
-  } = CONTACT_DATA;
+  const { content } = CONTACT_DATA;
 
   return (
     <main className="mx-auto grid min-h-screen w-full max-w-7xl gap-10 px-5 py-12 sm:px-8 lg:grid-cols-2 lg:gap-14 lg:px-10 lg:py-16">
@@ -291,7 +268,9 @@ export default function Contact() {
           <input
             id={content.form.fields.name.id}
             name={content.form.fields.name.name}
-            placeholder={content.form.fields.name.placeholder}
+            placeholder={
+              content.form.fields.name.placeholder
+            }
             className="h-12 w-full rounded-xl border border-neutral-300 bg-white px-4 text-sm outline-none transition focus:border-orange-500 dark:border-white/10 dark:bg-white/5 dark:text-white"
             onChange={(e) =>
               setForm({
@@ -314,7 +293,9 @@ export default function Contact() {
             id={content.form.fields.email.id}
             name={content.form.fields.email.name}
             type={content.form.fields.email.type}
-            placeholder={content.form.fields.email.placeholder}
+            placeholder={
+              content.form.fields.email.placeholder
+            }
             className="h-12 w-full rounded-xl border border-neutral-300 bg-white px-4 text-sm outline-none transition focus:border-orange-500 dark:border-white/10 dark:bg-white/5 dark:text-white"
             onChange={(e) =>
               setForm({
@@ -336,7 +317,9 @@ export default function Contact() {
           <input
             id={content.form.fields.phone.id}
             name={content.form.fields.phone.name}
-            placeholder={content.form.fields.phone.placeholder}
+            placeholder={
+              content.form.fields.phone.placeholder
+            }
             className="h-12 w-full rounded-xl border border-neutral-300 bg-white px-4 text-sm outline-none transition focus:border-orange-500 dark:border-white/10 dark:bg-white/5 dark:text-white"
             onChange={(e) =>
               setForm({
@@ -372,7 +355,7 @@ export default function Contact() {
 
             {content.form.fields.service.options.map(
               (service) => (
-                <option key={service}>
+                <option key={service} value={service}>
                   {service}
                 </option>
               )
@@ -474,35 +457,37 @@ export default function Contact() {
       {/* IMAGE + MAP */}
 
       <section className="flex flex-col gap-5">
+        {/* IMAGE */}
+
         <div className="relative h-[420px] overflow-hidden rounded-3xl sm:h-[500px] lg:h-[560px]">
-  <Image
-    src={work}
-    alt={content.image.alt}
-    fill
-    priority
-    className="object-cover"
-  />
+          <Image
+            src={work}
+            alt={content.image.alt}
+            fill
+            priority
+            className="object-cover"
+          />
 
-  {/* Gradient orange */}
-  <div className="absolute inset-0 bg-gradient-to-t from-[#C65D18]/95 via-[#C65D18]/35 to-transparent" />
+          {/* Gradient orange */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#C65D18]/95 via-[#C65D18]/35 to-transparent" />
 
-  {/* Légère couche sombre pour améliorer la lisibilité */}
-  <div className="absolute inset-0 bg-black/10" />
+          {/* Légère couche sombre */}
+          <div className="absolute inset-0 bg-black/10" />
 
-  {/* TEXTE */}
-  <div className="absolute bottom-6 left-5 right-5 rounded-2xl border border-white/20 bg-black/20 p-5 text-white backdrop-blur-md sm:bottom-8 sm:left-8 sm:right-8 sm:p-6">
+          {/* TEXTE */}
 
-    <div className="mb-3 h-1 w-10 rounded-full bg-[var(--orange)]" />
+          <div className="absolute bottom-6 left-5 right-5 rounded-2xl border border-white/20 bg-black/20 p-5 text-white backdrop-blur-md sm:bottom-8 sm:left-8 sm:right-8 sm:p-6">
+            <div className="mb-3 h-1 w-10 rounded-full bg-[var(--orange)]" />
 
-    <p className="text-xl font-bold leading-tight sm:text-2xl">
-      {content.image.title}
-    </p>
+            <p className="text-xl font-bold leading-tight sm:text-2xl">
+              {content.image.title}
+            </p>
 
-    <p className="mt-2 max-w-xl text-sm leading-6 text-white/85 sm:mt-3">
-      {content.image.description}
-    </p>
-  </div>
-</div>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-white/85 sm:mt-3">
+              {content.image.description}
+            </p>
+          </div>
+        </div>
 
         {/* MAP */}
 
