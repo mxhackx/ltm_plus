@@ -21,9 +21,18 @@ type CreateOrderBody = {
   };
 };
 
+// Type utilisé pour créer les OrderItem.
+// Il correspond aux champs nécessaires à Prisma.
+type OrderItemCreateInput = {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+};
+
 // ======================================================
-// POST /api/orders
+// GET /api/orders
 // ======================================================
+
 export async function GET() {
   try {
     const user = await getCurrentUser();
@@ -76,9 +85,12 @@ export async function GET() {
     );
   }
 }
-export async function POST(
-  request: NextRequest
-) {
+
+// ======================================================
+// POST /api/orders
+// ======================================================
+
+export async function POST(request: NextRequest) {
   try {
     // ====================================================
     // VÉRIFIER L'AUTHENTIFICATION
@@ -106,8 +118,7 @@ export async function POST(
     let body: CreateOrderBody;
 
     try {
-      body =
-        (await request.json()) as CreateOrderBody;
+      body = (await request.json()) as CreateOrderBody;
     } catch {
       return NextResponse.json(
         {
@@ -139,21 +150,15 @@ export async function POST(
       );
     }
 
-    const fullName =
-      customer.fullName?.trim();
-
-    const phone =
-      customer.phone?.trim();
-
-    const address =
-      customer.address?.trim();
+    const fullName = customer.fullName?.trim();
+    const phone = customer.phone?.trim();
+    const address = customer.address?.trim();
 
     if (!fullName) {
       return NextResponse.json(
         {
           success: false,
-          error:
-            "Le nom complet est obligatoire.",
+          error: "Le nom complet est obligatoire.",
         },
         {
           status: 400,
@@ -191,10 +196,7 @@ export async function POST(
     // VALIDATION DU PANIER
     // ====================================================
 
-    if (
-      !Array.isArray(items) ||
-      items.length === 0
-    ) {
+    if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         {
           success: false,
@@ -239,12 +241,10 @@ export async function POST(
       (item) => item.productId
     );
 
-    const uniqueProductIds =
-      new Set(productIds);
+    const uniqueProductIds = new Set(productIds);
 
     if (
-      uniqueProductIds.size !==
-      productIds.length
+      uniqueProductIds.size !== productIds.length
     ) {
       return NextResponse.json(
         {
@@ -262,35 +262,28 @@ export async function POST(
     // RÉCUPÉRER LES PRODUITS
     // ====================================================
 
-    const products =
-      await prisma.product.findMany({
-        where: {
-          id: {
-            in: productIds,
-          },
+    const products = await prisma.product.findMany({
+      where: {
+        id: {
+          in: productIds,
         },
-      });
+      },
+    });
 
     // ====================================================
     // VÉRIFIER QUE TOUS LES PRODUITS EXISTENT
     // ====================================================
 
     if (
-      products.length !==
-      uniqueProductIds.size
+      products.length !== uniqueProductIds.size
     ) {
-      const existingIds =
-        new Set(
-          products.map(
-            (product) => product.id
-          )
-        );
+      const existingIds = new Set(
+        products.map((product) => product.id)
+      );
 
-      const missingProducts =
-        productIds.filter(
-          (id) =>
-            !existingIds.has(id)
-        );
+      const missingProducts = productIds.filter(
+        (id) => !existingIds.has(id)
+      );
 
       return NextResponse.json(
         {
@@ -311,15 +304,15 @@ export async function POST(
 
     let totalPrice = 0;
 
-    const orderItems = [];
+    // CORRECTION PRINCIPALE :
+    // Le tableau possède maintenant un type explicite.
+    const orderItems: OrderItemCreateInput[] = [];
 
     for (const item of items) {
-      const product =
-        products.find(
-          (product) =>
-            product.id ===
-            item.productId
-        );
+      const product = products.find(
+        (product) =>
+          product.id === item.productId
+      );
 
       if (!product) {
         return NextResponse.json(
@@ -335,8 +328,7 @@ export async function POST(
       }
 
       const itemTotal =
-        product.price *
-        item.quantity;
+        product.price * item.quantity;
 
       totalPrice += itemTotal;
 
@@ -351,53 +343,52 @@ export async function POST(
     // CRÉER LA COMMANDE
     // ====================================================
 
-    const order =
-      await prisma.$transaction(
-        async (tx) => {
-          const newOrder =
-            await tx.order.create({
-              data: {
-                // ==========================================
-                // UTILISATEUR CONNECTÉ
-                // ==========================================
+    const order = await prisma.$transaction(
+      async (tx) => {
+        const newOrder =
+          await tx.order.create({
+            data: {
+              // ==========================================
+              // UTILISATEUR CONNECTÉ
+              // ==========================================
 
-                userId: user.id,
+              userId: user.id,
 
-                // ==========================================
-                // PRIX
-                // ==========================================
+              // ==========================================
+              // PRIX
+              // ==========================================
 
-                totalPrice,
+              totalPrice,
 
-                // ==========================================
-                // INFORMATIONS DE LIVRAISON
-                // ==========================================
+              // ==========================================
+              // INFORMATIONS DE LIVRAISON
+              // ==========================================
 
-                fullName,
-                phone,
-                address,
+              fullName,
+              phone,
+              address,
 
-                // ==========================================
-                // ARTICLES
-                // ==========================================
+              // ==========================================
+              // ARTICLES
+              // ==========================================
 
-                items: {
-                  create: orderItems,
+              items: {
+                create: orderItems,
+              },
+            },
+
+            include: {
+              items: {
+                include: {
+                  product: true,
                 },
               },
+            },
+          });
 
-              include: {
-                items: {
-                  include: {
-                    product: true,
-                  },
-                },
-              },
-            });
-
-          return newOrder;
-        }
-      );
+        return newOrder;
+      }
+    );
 
     // ====================================================
     // RÉPONSE
@@ -415,48 +406,36 @@ export async function POST(
 
           userId: order.userId,
 
-          totalPrice:
-            order.totalPrice,
+          totalPrice: order.totalPrice,
 
-          fullName:
-            order.fullName,
+          fullName: order.fullName,
 
-          phone:
-            order.phone,
+          phone: order.phone,
 
-          address:
-            order.address,
+          address: order.address,
 
-          status:
-            order.status,
+          status: order.status,
 
-          createdAt:
-            order.createdAt,
+          createdAt: order.createdAt,
 
-          updatedAt:
-            order.updatedAt,
+          updatedAt: order.updatedAt,
 
           items: order.items.map(
             (item) => ({
               id: item.id,
 
-              productId:
-                item.productId,
+              productId: item.productId,
 
-              quantity:
-                item.quantity,
+              quantity: item.quantity,
 
-              unitPrice:
-                item.unitPrice,
+              unitPrice: item.unitPrice,
 
               product: {
                 id: item.product.id,
 
-                name:
-                  item.product.name,
+                name: item.product.name,
 
-                price:
-                  item.product.price,
+                price: item.product.price,
 
                 description:
                   item.product.description,
