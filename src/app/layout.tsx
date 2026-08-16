@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.png",
-        width: 1200,
+        url: "https://ltm-plus.vercel.app/logo.png",
+        width: 630,
         height: 630,
         alt: "LTM+ Industries",
       },
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: "LTM+ Industries | Tubes électriques au Bénin",
     description:
       "Découvrez les tubes électriques orange et les solutions proposées par LTM+ Industries au Bénin.",
-    images: ["/logo.png"],
+    images: ["https://ltm-plus.vercel.app/logo.png"],
   },
 
   robots: {
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "https://ltm-plus.vercel.app/logo.png",
+    apple: "https://ltm-plus.vercel.app/logo.png",
   },
 };
 
