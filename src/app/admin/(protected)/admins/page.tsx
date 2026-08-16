@@ -20,6 +20,7 @@ export default async function AdminsPage() {
   // SUPPRESSION ADMIN
   // ==========================================================
   async function handleDeleteAdmin(formData: FormData) {
+    "use server"
     await deleteAdmin(formData);
   }
 
