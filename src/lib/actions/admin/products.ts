@@ -1,11 +1,27 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { put } from "@vercel/blob";
+
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/actions/admin/auth";
 
-import fs from "fs/promises";
-import path from "path";
+// ============================================================
+// TYPES / CONSTANTS
+// ============================================================
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+];
+
+// ============================================================
+// GET PRODUCTS
+// ============================================================
 
 export async function getProducts() {
   await requireAdmin();
@@ -25,6 +41,10 @@ export async function getProducts() {
     },
   });
 }
+
+// ============================================================
+// GET PRODUCT
+// ============================================================
 
 export async function getProduct(id: number) {
   await requireAdmin();
@@ -46,21 +66,21 @@ export async function updateProduct(
 ) {
   await requireAdmin();
 
+  // ==========================================================
+  // RECUPERATION DES CHAMPS
+  // ==========================================================
+
   const name = String(
     formData.get("name") || ""
   ).trim();
 
-  const price = Number(
-    formData.get("price")
-  );
+  const priceValue = String(
+    formData.get("price") || ""
+  ).trim();
 
   const wasPriceValue = String(
     formData.get("wasPrice") || ""
   ).trim();
-
-  const wasPrice = wasPriceValue
-    ? Number(wasPriceValue)
-    : null;
 
   const dimensions = String(
     formData.get("dimensions") || ""
@@ -76,17 +96,59 @@ export async function updateProduct(
 
   const image = formData.get("image");
 
+  // ==========================================================
+  // VALIDATION NOM
+  // ==========================================================
+
   if (!name) {
     throw new Error(
       "Le nom du produit est obligatoire."
     );
   }
 
-  if (!Number.isFinite(price) || price < 0) {
+  // ==========================================================
+  // VALIDATION PRIX
+  // ==========================================================
+
+  const price = Number(priceValue);
+
+  if (
+    !Number.isInteger(price) ||
+    price < 0
+  ) {
     throw new Error(
       "Le prix du produit est invalide."
     );
   }
+
+  // ==========================================================
+  // VALIDATION ANCIEN PRIX
+  // ==========================================================
+
+  let wasPrice: number | null = null;
+
+  if (wasPriceValue !== "") {
+    wasPrice = Number(wasPriceValue);
+
+    if (
+      !Number.isInteger(wasPrice) ||
+      wasPrice < 0
+    ) {
+      throw new Error(
+        "L'ancien prix est invalide."
+      );
+    }
+
+    if (wasPrice <= price) {
+      throw new Error(
+        "L'ancien prix doit être supérieur au prix actuel."
+      );
+    }
+  }
+
+  // ==========================================================
+  // VALIDATION DIMENSIONS
+  // ==========================================================
 
   if (!dimensions) {
     throw new Error(
@@ -94,11 +156,19 @@ export async function updateProduct(
     );
   }
 
+  // ==========================================================
+  // VALIDATION CATEGORIE
+  // ==========================================================
+
   if (!category) {
     throw new Error(
       "La catégorie est obligatoire."
     );
   }
+
+  // ==========================================================
+  // VALIDATION DESCRIPTION
+  // ==========================================================
 
   if (!description) {
     throw new Error(
@@ -112,100 +182,58 @@ export async function updateProduct(
 
   let imageUrl: string | undefined;
 
-  if (
-    image instanceof File &&
-    image.size > 0
-  ) {
+  if (image instanceof File && image.size > 0) {
     // --------------------------------------------------------
-    // Vérifier le type
+    // TYPE
     // --------------------------------------------------------
 
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "image/avif",
-    ];
-
-    if (!allowedTypes.includes(image.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
       throw new Error(
-        "Format d'image non supporté."
+        "Format d'image non supporté. Utilisez JPG, PNG, WEBP ou AVIF."
       );
     }
 
     // --------------------------------------------------------
-    // Vérifier la taille
+    // TAILLE
     // --------------------------------------------------------
 
-    if (image.size > 5 * 1024 * 1024) {
+    if (image.size > MAX_IMAGE_SIZE) {
       throw new Error(
         "L'image ne doit pas dépasser 5 Mo."
       );
     }
 
     // --------------------------------------------------------
-    // Extension
+    // EXTENSION
     // --------------------------------------------------------
 
     const extension =
       getImageExtension(image.type);
 
     // --------------------------------------------------------
-    // Nom sécurisé
+    // NOM DU FICHIER
     // --------------------------------------------------------
 
     const fileName =
-      `product-${id}-${Date.now()}${extension}`;
+      `products/product-${id}-${crypto.randomUUID()}${extension}`;
 
     // --------------------------------------------------------
-    // Dossier public/products
+    // UPLOAD VERCEL BLOB
     // --------------------------------------------------------
 
-    const productsDirectory =
-      path.join(
-        process.cwd(),
-        "public",
-        "products"
-      );
-
-    await fs.mkdir(
-      productsDirectory,
+    const blob = await put(
+      fileName,
+      image,
       {
-        recursive: true,
+        access: "public",
       }
     );
 
     // --------------------------------------------------------
-    // Chemin complet
+    // URL
     // --------------------------------------------------------
 
-    const filePath =
-      path.join(
-        productsDirectory,
-        fileName
-      );
-
-    // --------------------------------------------------------
-    // Sauvegarder le fichier
-    // --------------------------------------------------------
-
-    const bytes =
-      await image.arrayBuffer();
-
-    const buffer =
-      Buffer.from(bytes);
-
-    await fs.writeFile(
-      filePath,
-      buffer
-    );
-
-    // --------------------------------------------------------
-    // URL publique
-    // --------------------------------------------------------
-
-    imageUrl =
-      `/products/${fileName}`;
+    imageUrl = blob.url;
   }
 
   // ==========================================================
@@ -235,7 +263,7 @@ export async function updateProduct(
     });
 
   // ==========================================================
-  // REVALIDATE
+  // REVALIDATION
   // ==========================================================
 
   revalidatePath(
@@ -245,6 +273,14 @@ export async function updateProduct(
   revalidatePath(
     `/admin/products/${id}/edit`
   );
+
+  revalidatePath(
+    "/catalog"
+  );
+
+  // ==========================================================
+  // RETURN
+  // ==========================================================
 
   return {
     success: true,
@@ -258,7 +294,7 @@ export async function updateProduct(
 
 function getImageExtension(
   mimeType: string
-) {
+): string {
   switch (mimeType) {
     case "image/jpeg":
       return ".jpg";
