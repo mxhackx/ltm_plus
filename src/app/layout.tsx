@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 
+  verification: {
+    google: "Q5LHKv_7lmV5ApGqrFJV3gp2M8GWvlYCB89TwY1eZHc",
+  },
+
   openGraph: {
     title: "LTM+ Industries | Tubes électriques au Bénin",
     description:
